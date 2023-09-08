@@ -1,0 +1,27 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/dschoolvisualizer/node_modules
+/dschoolvisualizer/.pnp
+/dschoolvisualizer/.pnp.js
+
+# testing
+/dschoolvisualizer/coverage
+
+# production
+/dschoolvisualizer/build
+
+# misc
+/dschoolvisualizer/.DS_Store
+/dschoolvisualizer/.env.local
+/dschoolvisualizer/.env.development.local
+/dschoolvisualizer/.env.test.local
+/dschoolvisualizer/.env.production.local
+
+/dschoolvisualizer/npm-debug.log*
+/dschoolvisualizer/yarn-debug.log*
+/dschoolvisualizer/yarn-error.log*
+
+
+/backend/.env
+/backend/database.db
