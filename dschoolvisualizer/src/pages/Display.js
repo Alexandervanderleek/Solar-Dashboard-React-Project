@@ -18,36 +18,53 @@ export default function Display() {
     //State & global context variables used
     const handle = useFullScreenHandle();
     const [scale, setScale] = useState(1);
-    const [error, setError] = useState('');
+    const [error, setError] = useState();
     const {isLoading, setIsLoading} = useContext(globalContext)
     const [windowWidth, setWindowWidth] = useState(window.innerWidth)
     const [dataItems, setDataItems] = useState();
-    const max_grid = 6
+    const [gridSettings, setSettings] = useState();
 
     //Method to set window dimensions
     const setWindowDimensions = () => {
         setWindowWidth(window.innerWidth)
     }
 
-    //hook to call backend to get display items
-    //make use of fetch package
-    useEffect(()=>{
-        if(!dataItems ){
-            setIsLoading(true)
-            fetch('http://127.0.0.1:5000/displayAPI',{
-                mode: 'cors',
-                headers: {
-                    'Access-Control-Allow-Origin':'*'
-                  }
+
+   //Function to request the display data from the backend
+   const requestData = (newData) =>{
+        if(!dataItems || newData ){
+             setIsLoading(true)
+             fetch('http://127.0.0.1:5000/displayAPI',{
+                 mode: 'cors',
+                 headers: {
+                     'Access-Control-Allow-Origin':'*'
+                }
             }).then(response=>response.json()).then((res)=>{
-                setDataItems(res)
+                setDataItems(res.results)
+                setSettings(res.settings)
+           
                 setIsLoading(false)
             }).catch((e)=>{
                 setIsLoading(false)
+                console.log(e)
                 setError("error fetching")
             })
         }
-    },[dataItems])
+    }
+
+
+    //hook for repetitive request of display data for updating purposes
+    useEffect(()=>{
+        console.log("use Effect")
+        requestData(false)
+        const reFetch = setInterval(()=>{
+            requestData(true)
+        }, 1000 * 60 * 60)
+        return () => clearInterval(reFetch)
+    },[])
+
+
+    
     
     //hook called on screen change
     useEffect(() => {
@@ -66,7 +83,7 @@ export default function Display() {
           let chunk = arr.slice(i, i + chunkSize);
           result.push(chunk);
         }
-      
+
         return result;
       }
 
@@ -116,8 +133,8 @@ export default function Display() {
                     {windowWidth>=1200 ? (
                             <Carousel className='flex' autoPlay={true} infiniteLoop={true} interval={4000} showThumbs={false} showStatus={false} showIndicators={false}>
                                 {
-                                    (splitArray(dataItems, max_grid)).map((item)=>(
-                                        <DisplayPage data={item} ></DisplayPage>
+                                    (splitArray(dataItems, (+gridSettings[1]*+gridSettings[2]))).map((item)=>(
+                                        <DisplayPage data={item} gridSettings={gridSettings} ></DisplayPage>
                                     ))
                                 }
                             </Carousel> 
@@ -125,8 +142,7 @@ export default function Display() {
                             <div className="min-h-screen grid text-center gap-2 p-2 bg-black">
                                 {
                                     dataItems.map((item)=>(
-                                        // <DisplayItem title={item.name} type={item.type} dataSet={item.data} unit={item.units} chart={item.chart}></DisplayItem>
-                                        <p>test</p>
+                                         <DisplayItem title={item.name} type={item.type} dataSet={item.data} unit={item.units} chart={item.chart}></DisplayItem>
                                     ))
                                 }
                             </div>

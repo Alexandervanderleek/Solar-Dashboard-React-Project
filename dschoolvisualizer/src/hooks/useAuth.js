@@ -29,10 +29,14 @@ const useAuth = () => {
             })
         }).then(response=>response.json()).then((res)=>{
             setIsLoading(false)
+            if(res.error){
+                setError(res.error)
+            }
             if(res.login){
                 setIsLoggedIn(true);
             }
         }).catch((err)=>{
+            console.log(err)
             setIsLoading(false)
             setError('Error Login')
         })

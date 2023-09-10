@@ -25,7 +25,7 @@ export default function AdminDashBoard() {
 
     useEffect(()=>{
        if(error!==''){
-        toast('error occurred')
+        toast(error)
         setError('')
        }
     },[error])
