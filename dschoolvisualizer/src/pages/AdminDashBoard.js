@@ -19,7 +19,14 @@ export default function AdminDashBoard() {
     const {isLoading,error, setError} = useContext(globalContext)
     const [name,setName] = useState('');
     const [password, setPassword] = useState('');
-   
+    
+
+    useEffect(()=>{
+        if(localStorage.tokendschool && !isLoggedIn){
+            LoginIn()
+        }
+    }, [])
+
     
     //hook for error detection, to trigger a error toast effect
 

@@ -11,9 +11,9 @@ export default function DisplayItem({title, type, dataSet, unit, chart}) {
   //change apperance based on information fed in e.g [chart type]
 
   return (
-    <div className='flex'>
-      <div className="card card-compact flex-1 bg-base-100 shadow-xl">
-        <div className="card-body">
+    
+      <div className="card card-compact  bg-base-100 shadow-xl">
+        
 
           {/* title item & type */}
           <div className='flex justify-center align-middle text-center'>
@@ -28,23 +28,28 @@ export default function DisplayItem({title, type, dataSet, unit, chart}) {
 
           {/* Additional Notes, to be developed */}
 
-            <div>
+            <div >
               <p>An interesting fact</p>
               <p>An interesting fact</p>
             </div>
             
             {/* Graph Item */}
+              
+            
 
-            {chart==='bar' && (
-                <BarGraph dataSet={dataSet} unit={unit} ></BarGraph>
-            )}
-
-            {chart==='line' && (
-              <LineGraph dataSet={dataSet} unit={unit} ></LineGraph>
-            )}
+            <div className='h-full w-full p-2'>
+                {chart==='bar' && (
+                    <BarGraph dataSet={dataSet} unit={unit} ></BarGraph>
+                )}
+                {chart==='line' && (
+                  <LineGraph dataSet={dataSet} unit={unit} ></LineGraph>
+                )}
+            </div>
+            
+            
+            
                   
-        </div>
       </div>
-    </div>
+   
   )
 }

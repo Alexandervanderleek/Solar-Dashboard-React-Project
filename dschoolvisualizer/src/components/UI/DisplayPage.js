@@ -8,6 +8,8 @@ export default function DisplayPage({data, gridSettings}) {
   
   //Data fed in as array and broken into sperate display Items
 
+ 
+  
   return (  
       <div className={`min-h-screen grid xl:grid-cols-${gridSettings[1]} xl:grid-rows-${gridSettings[2]} gap-2 p-2 bg-black` }>
           {
