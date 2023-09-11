@@ -15,7 +15,7 @@ import sqlite3
 # [x] LoginBase
 # To Do
 # [] Register/change pass
-# [] Login Tokens and db interaction
+# [x] Login Tokens and db interaction
 # [] Admin Routes
 # [] display customization routes
 
@@ -24,10 +24,10 @@ app = Flask(__name__)
 auth = HTTPBasicAuth()
 CORS(app)
 
-@auth.verify_password
-def verify_password(username, password):
-    print(username)
-    print(password)
+@auth.veify_token
+def verify_token(token):
+    print(token)
+    
 
 
 
