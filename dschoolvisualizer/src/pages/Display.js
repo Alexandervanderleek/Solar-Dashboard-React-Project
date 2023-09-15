@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Carousel } from 'react-responsive-carousel'
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
 import { FullScreen, useFullScreenHandle } from "react-full-screen";
-import { MdFullscreen } from 'react-icons/md';
+import { MdFullscreen, MdCached } from 'react-icons/md';
 import DisplayPage from '../components/UI/DisplayPage';
 import DisplayItem from '../components/UI/DisplayItem';
 import LoadingSpinner from '../components/UI/LoadingSpinner';
@@ -97,8 +97,13 @@ export default function Display() {
     // if in error state, load a error page [need to be completed]
     if(error){
         return(
-            <div>
-                error
+            <div className='min-h-screen flex flex-col justify-center items-center text-center align-middle'>
+                <p className='font-bold text-3xl text-red-500'>An Error has Occured</p>
+                <p className='font-bold text-3xl text-red-500'>Try Again Later</p>       
+                <button className="btn btn-error mt-4" onClick={()=>{window.location.reload()}}>
+                    Reload 
+                    <MdCached  size={40}></MdCached>
+                </button>         
             </div>
         )
     }

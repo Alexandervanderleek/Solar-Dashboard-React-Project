@@ -7,10 +7,10 @@ import useAuth from '../../hooks/useAuth';
 const AuthProvider = ({children}) => {
     
     //auth hook returns the login and login status
-    const [isLoggedIn, LoginIn] = useAuth();
+    const [isLoggedIn, LoginIn, logoutUser] = useAuth();
 
     return(
-        <AuthContext.Provider value={{isLoggedIn, LoginIn}}>
+        <AuthContext.Provider value={{isLoggedIn, LoginIn, logoutUser}}>
             {children}
         </AuthContext.Provider>
     )

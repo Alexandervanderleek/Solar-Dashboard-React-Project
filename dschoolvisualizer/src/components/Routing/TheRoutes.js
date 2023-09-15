@@ -6,6 +6,7 @@ import {Routes, Route} from 'react-router-dom';
 import LandingPage from '../../pages/LandingPage';
 import Display from '../../pages/Display';
 import AdminDashBoard from '../../pages/AdminDashBoard';
+import SpecificItem from '../../pages/SpecificItem';
 
 export default function TheRoutes() {
   return (
@@ -23,6 +24,11 @@ export default function TheRoutes() {
 
         {/* Dashboard route, to be protected */}
         <Route path="/admindashboard" element={<AdminDashBoard></AdminDashBoard>}>
+
+        </Route>
+
+         {/* Dashboard route, to be protected */}
+         <Route path="/admindashboard/:id" exact element={<SpecificItem></SpecificItem>}>
 
         </Route>
 

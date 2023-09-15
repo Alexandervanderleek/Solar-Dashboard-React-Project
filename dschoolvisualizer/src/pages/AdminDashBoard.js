@@ -7,6 +7,8 @@ import LoadingSpinner from '../components/UI/LoadingSpinner';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useEffect } from 'react';
+import {useNavigate} from "react-router-dom"
+
 
 //Admin Dashboard page for for editing display options
 //Requires a login via a master login
@@ -15,19 +17,28 @@ export default function AdminDashBoard() {
 
     //state variables and global context 
 
-    const {isLoggedIn, LoginIn} = useContext(authContext);
+    const {isLoggedIn, LoginIn, logoutUser} = useContext(authContext);
     const {isLoading,error, setError, setIsLoading} = useContext(globalContext)
     const [name,setName] = useState('');
     const [password, setPassword] = useState('');
     const [dataItems, setDataItems] = useState();
     const [gridSettings, setSettings] = useState();
-    
+    const [value, setValue] = useState();
+
+    const navigate = useNavigate();
 
     useEffect(()=>{
         if(localStorage.tokendschool && !isLoggedIn){
             LoginIn()
         }
     }, [])
+
+     const logout = () => {
+             console.log("logout attempt")
+            logoutUser()
+            toast("Succefully Logged out")
+       
+    }
 
     const requestData = () =>{
         if(!dataItems ){
@@ -50,6 +61,13 @@ export default function AdminDashBoard() {
                 setError("error fetching")
             })
         }
+    }
+
+    const addNewItem = () => {
+        if(!value){
+            toast("Please select a item to add")
+        }
+        console.log(value)
     }
 
     useEffect(()=>{
@@ -81,54 +99,83 @@ export default function AdminDashBoard() {
 
     if(isLoggedIn && dataItems){
         return(
-            <div class="overflow-x-auto">
-                <table class="table">
-                   
-                        <thead>
-                        <tr>
-                            <th></th>
-                            <th>Name</th>
-                            <th>Job</th>
-                            <th>Favorite Color</th>
-                        </tr>
-                        </thead>
-                    <tbody>
-                   
-                        {/* <tr>
-                            <th>1</th>
-                            <td>Cy Ganderton</td>
-                            <td>Quality Control Specialist</td>
-                            <td>Blue</td>
-                        </tr>
-                    
-                        <tr class="hover">
-                            <th>2</th>
-                            <td>Hart Hagerty</td>
-                            <td>Desktop Support Technician</td>
-                            <td>Purple</td>
-                        </tr>
-                   
-                        <tr>
-                            <th>3</th>
-                            <td>Brice Swyre</td>
-                            <td>Tax Accountant</td>
-                            <td>Red</td>
-                        </tr> */}
-                        {
-                            dataItems.map((item)=>(
-                                <tr class="hover">
-                                    <th>{item[0]}</th>
-                                    <td>{item[1]}</td>
-                                    <td>Desktop Support Technician</td>
-                                    <td>Purple</td>
-                                </tr>
-                            ))
-                        }
-
-
-                    </tbody>
-                </table>
+            <>
+            <ToastContainer></ToastContainer>
+            <div className='min-h-screen'>
+            <div className="navbar bg-base-300">
+                <div className="flex-1">
+                    <a className="btn btn-ghost normal-case text-2xl">ADMINDASHBOARD</a>
+                </div>
+                <div className="flex-none">
+                    <ul className="menu menu-horizontal px-1">
+                    <button onClick={()=>{logout()}} className="btn btn-error">Logout</button>
+                    </ul>
+                </div>
             </div>
+
+            
+
+            <div className='flex flex-col justify-center items-center mt-8'>
+                <div className='flex flex-row w-full justify-center p-12'>
+
+                    <select onChange={event => setValue(event.target.value)} className="select select-lg select-success w-full max-w-xs">
+                        <option disabled selected>Pick a display item</option>
+                        <option value={'EC'}>Electric Consumption</option>
+                        <option value={'EP'}>Electric Production</option>
+                        <option value={'WC'}>Water Consumption</option>
+                        <option value={'ECVSEP'}>Electric Consumption vs Production</option>
+                    </select>
+
+                    <button class="btn btn-lg btn-success ml-8" onClick={()=>{addNewItem()}}>Add Display Item</button>
+
+                </div>
+
+
+                <div className="border-indigo-500 border-4 rounded-2xl">
+                    <table className=" table table-lg max-w-6xl m-5">
+                    
+                            <thead>
+                            <tr className='text-lg'>
+                                <th>ID</th>
+                                <th>TYPE</th>
+                                <th>DATA</th>
+                                <th>INTERVAL</th>
+                                <th>PERIOD</th>
+                                <th>GRAPH</th>
+                                <th>ICON</th>
+                                <th>ENABLED</th>
+                                <th>TITLE</th>
+
+
+                            </tr>
+                            </thead>
+                        <tbody className=''>
+                            {
+                                dataItems.map((item)=>(
+                                    
+                                        <tr onClick={()=>{navigate(`/admindashboard/${item[0]}`, {state: item})}} key={item[0]} class="hover">
+                                            <th>{item[0]}</th>
+                                            <td>{item[1]}</td>
+                                            <td>{item[2]}</td>
+                                            <td>{item[3]}</td>
+                                            <td>{item[4]}</td>
+                                            <td>{item[5]}</td>
+                                            <td>{item[6]}</td>
+                                            <td>{item[7]}</td>
+                                            <td>{item[8]}</td>
+                                            
+                                        </tr>
+                                   
+                                ))
+                            }
+
+
+                        </tbody>
+                    </table>
+                    </div>
+            </div>
+            </div>
+            </>
         )
     }
 
@@ -159,3 +206,5 @@ export default function AdminDashBoard() {
         </>
     )
 }
+
+

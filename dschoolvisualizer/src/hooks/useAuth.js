@@ -72,10 +72,15 @@ const useAuth = () => {
     }
 
 
+    const logoutUser = () => {
+        localStorage.removeItem('tokendschool')
+        setIsLoggedIn(false)
+    }
+
 
     //items to be returned for global access
 
-    return [isLoggedIn, LoginIn];
+    return [isLoggedIn, LoginIn, logoutUser];
 }
 
 export default useAuth;
