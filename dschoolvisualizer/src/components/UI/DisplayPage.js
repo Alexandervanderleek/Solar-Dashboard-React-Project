@@ -14,7 +14,7 @@ export default function DisplayPage({data, gridSettings}) {
       <div className={`min-h-screen grid xl:grid-cols-${gridSettings[1]} xl:grid-rows-${gridSettings[2]} gap-2 p-2 bg-black` }>
           {
             data.map((item)=>(
-              <DisplayItem title={item.name} type={item.type} dataSet={item.data} unit={item.units} chart={item.chart}></DisplayItem>
+              <DisplayItem key={item.id} title={item.name} type={item.type} dataSet={item.data} unit={item.units} chart={item.chart} color={item.color} notes={item.notes}></DisplayItem>
             )) 
           }  
       </div>

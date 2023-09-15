@@ -6,7 +6,7 @@ ChartJS.register( CategoryScale, LinearScale, PointElement, LineElement, Title, 
 
 //Line graph component taking in props, dataset and unit types
 
-export default function LineGraph({dataSet, unit, color}) {
+export default function MultiLineGraph({dataSet, unit}) {
 
   //transpose function, convert 2d array to two individual arrays
 
@@ -44,9 +44,10 @@ export default function LineGraph({dataSet, unit, color}) {
 
   //transposing the data set 
 
-  const transposedArray = transpose(dataSet)
+  const transposedArray = transpose(dataSet[0].data)
+  const tansposedArray2 = transpose(dataSet[1].data)
   let labelsArr = []
-  transposedArray[ unit==='k/l' ? 1 : 0 ].forEach((item)=>{
+  transposedArray[0].forEach((item)=>{
     labelsArr.push((new Date(item).toLocaleDateString().split(" ")).slice(0,3).join(' '))
   })
   
@@ -58,11 +59,20 @@ export default function LineGraph({dataSet, unit, color}) {
     labels,
     datasets: [
       {
-        label: unit,
-        data: transposedArray[unit==='k/l' ? 0 : 1],
-        backgroundColor: color,
-        borderColor: color,
+        label: 'Consumed',
+        data: transposedArray[1],
+        backgroundColor: dataSet[0].color,
+        borderColor: dataSet[0].color,
         fill: true,
+        order: 2
+      },
+      {
+        label: 'Produced',
+        data: tansposedArray2[1],
+        backgroundColor: dataSet[1].color,
+        borderColor: dataSet[1].color,
+        fill: true,
+        order: 1
       },
     ],
   };

@@ -1,14 +1,15 @@
 import requests
 from decouple import config
+import numpy as np
+
+    
 
 
 #function to create the request url based on componet parsed in
 def createURL(item):
-
-    baseURL = 'https://dashboard.terrafirma-software.com/Clientapi/'
-
     match item[2]:
        case "EC":
+            baseURL = 'https://dashboard.terrafirma-software.com/Clientapi/'
             match item[3]:
                 case "day":
                     baseURL += 'getG1Data?interval=ts_1day&from_id=7&data_id=14472'
@@ -19,7 +20,138 @@ def createURL(item):
                 case "hour":
                     baseURL += 'getG1Data?interval=ts_1hour&from_id=4&data_id=14472'
                     return baseURL
-     
+       case "EP":
+            baseURL = 'https://dashboard.terrafirma-software.com/Clientapi/'
+            match item[3]:
+                case "day":
+                    baseURL += 'getG33Data?interval=ts_1day&from_id=7&data_id=14746'  
+                    return baseURL
+                case "month":
+                    baseURL += 'getG33Data?interval=ts_1month&from_id=7&data_id=14746'
+                    return baseURL
+                case "hour":
+                    baseURL += 'getG133ata?interval=ts_1hour&from_id=4&data_id=14746'
+                    return baseURL
+       case "WC":
+            match item[3]:
+                case "day":
+                    baseURL = 'https://dashboard.terrafirma-software.com/WaterApi/getWaterUsageData?interval=ts_1day&from_id=5&data_id='
+                    return baseURL
+                case "month":
+                    baseURL = 'https://dashboard.terrafirma-software.com/WaterApi/getWaterUsageData?interval=ts_1month&from_id=7&data_id='
+                    return baseURL
+                case "hour":
+                    baseURL = 'https://dashboard.terrafirma-software.com/WaterApi/getWaterUsageData?interval=ts_1hour&from_id=3&data_id='
+                    return baseURL
+
+
+def fetchElectricData(x,gatheredData, returnData, dataPoint, units, color, title):
+    placeholder = title + x[3]
+    if placeholder not in  gatheredData:
+        url = createURL(x)
+        response = requests.get(url=url, auth=(config('TERRA_API_USER') ,config('TERRA_API_PASS')))
+        gatheredData[placeholder] = response.json()[dataPoint]
+        returnData.append(
+            {
+                'id' : x[0],
+                'name': x[8],
+                'chart': x[5],
+                'type': x[1],
+                'notes': x[6],
+                'units': units,
+                'data': gatheredData[placeholder][-x[4]:],
+                'color': color
+            }
+        )
+    else:
+        returnData.append(
+            {
+                'id' : x[0],
+                'name': x[8],
+                'chart': x[5],
+                'type': x[1],
+                'notes': x[6],
+                'units': units,
+                'data': gatheredData[placeholder][-x[4]:],
+                'color': color
+            }
+        )
+
+
+def fetchWaterData(x,gatheredData, returnData, units, color):
+    if x[2]+x[3] not in  gatheredData:  
+            url = createURL(x)
+            headers = {'Cookie': 'JSESSIONID=859B363EE9ED61EBED21CB1D7FFAE2E9; SERVERID=c2|ZQBMv|ZQAhS'}
+            DataItems = ['14016','14017','14010','14012','14009','14011','14013','14015','14014']#,'14010',14012,14009,14011,14013,14015,14014,14018
+            cleanResponses = []
+            for z in DataItems:
+                response = requests.get(url=url+z, headers=headers) 
+                cleanResponse = response.json()['data_json'][0]['water_kl']
+                cleanResponses.append(cleanResponse)
+                
+            
+            FinalResponse = []
+            for i in range(len(cleanResponses[0])):
+                total = 0
+                for arr in cleanResponses:
+                        total += arr[i][1]
+                FinalResponse.append([total,cleanResponses[0][i][0]])
+                
+
+
+            gatheredData[x[2]+x[3]] = FinalResponse
+        
+            returnData.append(
+                {
+                    'id' : x[0],
+                    'name': x[8],
+                    'chart': x[5],
+                    'type': x[1],
+                    'notes': x[6],
+                    'units': units,
+                    'data': gatheredData[x[2]+x[3]][-x[4]:],
+                    'color': color
+                }
+            )
+    else:
+            returnData.append(
+            {
+                'id' : x[0],
+                'name': x[8],
+                'chart': x[5],
+                'type': x[1],
+                'notes': x[6],
+                'units': units,
+                'data': gatheredData[x[2]+x[3]][-x[4]:],
+                'color': color
+            }
+            )
+
+
+def dualElectricFetch(x, gatheredData, returnData):
+    arr1 = []
+    arr2 = []
+    units = 'kw/h'
+    color = 'rgb(255, 99, 132, 0.5)'
+    fetchElectricData(x, gatheredData, arr1, 1, units, color, 'EC')
+    color = 'rgb(72,195,83,0.6)'
+    fetchElectricData(x, gatheredData, arr2, 0, units, color, 'EP')
+
+    returnData.append(
+         {
+                'id' : x[0],
+                'name': x[8],
+                'chart': x[5],
+                'type': x[1],
+                'notes': x[6],
+                'units': units,
+                'data': [arr1[0], arr2[0]],
+                'color': color
+            }
+        ) 
+    
+
+
 
 
 #function to return all data for the parsed in display item
@@ -30,37 +162,31 @@ def displayItems(arrayDisplayItems):
     
     gatheredData = {}
     returnData = []
+    
 
     for x in arrayDisplayItems:
         match x[2]:
             case "EC":
                 units = 'kw/h'
+                color = 'rgb(255, 99, 132, 0.5)'
+                dataPoint = 1
+                fetchElectricData(x, gatheredData, returnData, dataPoint, units, color, x[2])
 
+            case "EP":
+                units = 'kw/h'
+                dataPoint = 0
+                color = 'rgb(72,195,83,0.6)'
+                fetchElectricData(x, gatheredData, returnData, dataPoint, units, color, x[2])
 
-        if x[2]+x[3] not in  gatheredData:
-            url = createURL(x)
-            response = requests.get(url=url, auth=(config('TERRA_API_USER') ,config('TERRA_API_PASS')))
-            gatheredData[x[2]+x[3]] = response.json()[1]
-
-            returnData.append(
-                {
-                    'name': x[8],
-                    'chart': x[5],
-                    'type': x[1],
-                    'units': units,
-                    'data': gatheredData[x[2]+x[3]][-x[4]:]
-                }
-            )
-        else:
-             returnData.append(
-                {
-                    'name': x[8],
-                    'chart': x[5],
-                    'type': x[1],
-                    'units': units,
-                    'data': gatheredData[x[2]+x[3]][-x[4]:]
-                }
-            )
+            case 'WC':
+                units = 'k/l'
+                color = 'rgb(53, 162, 235, 0.5)'
+                fetchWaterData(x,gatheredData,returnData,units,color)
+            
+            case 'ECVSEP':
+                dualElectricFetch(x,gatheredData,returnData)
+              
+  
 
     return returnData
 

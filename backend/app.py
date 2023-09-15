@@ -1,7 +1,7 @@
-from flask import Flask,request, jsonify
+from flask import Flask,request
 from dataCollector import *
 from flask_cors import CORS
-from flask_httpauth import HTTPBasicAuth
+from functools import wraps
 from decouple import config
 import bcrypt
 import jwt
@@ -21,14 +21,26 @@ import sqlite3
 
 
 app = Flask(__name__)
-auth = HTTPBasicAuth()
 CORS(app)
 
-@auth.veify_token
-def verify_token(token):
-    print(token)
-    
 
+
+#Function to protect routes that require a token
+def token_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if('Authorization' in request.headers):
+            try:
+                decoded_jwt = jwt.decode(request.headers['Authorization'], config('SECRET_JWT_ENCODE'), algorithms=["HS256"])
+                if decoded_jwt['login'] == 'true':
+                    return f(*args, **kwargs)
+                else:
+                    return  {"error" : "Auth Token error"}
+            except:
+                return {"error" : "Auth Token error"}
+        else:
+            return {"error": "No Auth Token detected"}
+    return decorated
 
 
 #display route - used to return current active components for large screen display
@@ -47,8 +59,30 @@ def index():
             'results' : result,
             'settings': resultSettings[0]
             }
-    except:
+    except Exception as exc:
+        print(exc)
         return 'error'
+
+
+@app.route('/dbAPI')
+@token_required
+def dbItems():
+    try:
+        with sqlite3.connect("database.db") as db:
+            cursor = db.cursor()
+            res = cursor.execute("SELECT * FROM COMPONENTS")
+            result = res.fetchall()
+
+            resSettings = cursor.execute("SELECT * FROM SETTINGS WHERE type='GRID'")
+            resultSettings = resSettings.fetchall()
+        return {
+            'results' : result,
+            'settings': resultSettings[0]
+            }
+    except Exception as exc:
+        print(exc)
+        return 'error'
+    
 
 #login route - used to attempt login when accessing the admin page
 @app.route('/loginAPI', methods=["POST"])

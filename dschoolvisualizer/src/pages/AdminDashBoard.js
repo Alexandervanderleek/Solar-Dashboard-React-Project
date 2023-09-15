@@ -16,9 +16,11 @@ export default function AdminDashBoard() {
     //state variables and global context 
 
     const {isLoggedIn, LoginIn} = useContext(authContext);
-    const {isLoading,error, setError} = useContext(globalContext)
+    const {isLoading,error, setError, setIsLoading} = useContext(globalContext)
     const [name,setName] = useState('');
     const [password, setPassword] = useState('');
+    const [dataItems, setDataItems] = useState();
+    const [gridSettings, setSettings] = useState();
     
 
     useEffect(()=>{
@@ -26,6 +28,36 @@ export default function AdminDashBoard() {
             LoginIn()
         }
     }, [])
+
+    const requestData = () =>{
+        if(!dataItems ){
+             setIsLoading(true)
+             fetch('http://127.0.0.1:5000/dbAPI',{
+                 mode: 'cors',
+                 headers: {
+                     'Access-Control-Allow-Origin':'*',
+                     'Authorization': localStorage.tokendschool
+                }
+            }).then(response=>response.json()).then((res)=>{
+                console.log(res.results)
+                setDataItems(res.results)
+                setSettings(res.settings)
+           
+                setIsLoading(false)
+            }).catch((e)=>{
+                setIsLoading(false)
+                console.log(e)
+                setError("error fetching")
+            })
+        }
+    }
+
+    useEffect(()=>{
+        if(isLoggedIn){
+            console.log("I want the data items")
+            requestData()
+        }
+    },[isLoggedIn])
 
     
     //hook for error detection, to trigger a error toast effect
@@ -47,10 +79,55 @@ export default function AdminDashBoard() {
 
     //if is logged in display the admin dashboard [to be developed]
 
-    if(isLoggedIn){
+    if(isLoggedIn && dataItems){
         return(
-            <div>
-                welcome to admin dashboard
+            <div class="overflow-x-auto">
+                <table class="table">
+                   
+                        <thead>
+                        <tr>
+                            <th></th>
+                            <th>Name</th>
+                            <th>Job</th>
+                            <th>Favorite Color</th>
+                        </tr>
+                        </thead>
+                    <tbody>
+                   
+                        {/* <tr>
+                            <th>1</th>
+                            <td>Cy Ganderton</td>
+                            <td>Quality Control Specialist</td>
+                            <td>Blue</td>
+                        </tr>
+                    
+                        <tr class="hover">
+                            <th>2</th>
+                            <td>Hart Hagerty</td>
+                            <td>Desktop Support Technician</td>
+                            <td>Purple</td>
+                        </tr>
+                   
+                        <tr>
+                            <th>3</th>
+                            <td>Brice Swyre</td>
+                            <td>Tax Accountant</td>
+                            <td>Red</td>
+                        </tr> */}
+                        {
+                            dataItems.map((item)=>(
+                                <tr class="hover">
+                                    <th>{item[0]}</th>
+                                    <td>{item[1]}</td>
+                                    <td>Desktop Support Technician</td>
+                                    <td>Purple</td>
+                                </tr>
+                            ))
+                        }
+
+
+                    </tbody>
+                </table>
             </div>
         )
     }

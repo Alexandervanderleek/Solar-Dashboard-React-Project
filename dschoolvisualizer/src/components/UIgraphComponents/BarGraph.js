@@ -5,7 +5,7 @@ ChartJS.register( CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend
 
 //Bar Graph display component, takes in props with unit types and data to display
 
-export default function BarGraph({dataSet, unit }) {
+export default function BarGraph({dataSet, unit, color }) {
 
   //transpose function, take 2d array dataset[data,time] and split it into seperate arrays 
 
@@ -13,13 +13,34 @@ export default function BarGraph({dataSet, unit }) {
 
   //graph options
 
+  console.log(color)
+
   const options = {
     responsive: true,
     plugins: {
       legend: {
         position: 'top',
+        labels: {
+          color: 'rgb(166,173,186)',
+          font: {
+            weight: 'bold',
+            size: 16
+          }
+          
+        }
       },
     },
+    scales: {
+      
+      y: {
+        ticks: { color: 'rgb(166,173,186,0.8)', },
+        border: {color: 'rgb(166,173,186,0.8)', width: 2}
+      },
+      x: {
+        ticks: { color: 'rgb(166,173,186,0.8)', },
+        border: {color: 'rgb(166,173,186,0.8)', width: 2}
+      }
+    }
   };
 
   // transpose the data set and use if for label puprposes and data purposes
@@ -28,7 +49,7 @@ export default function BarGraph({dataSet, unit }) {
   
   let labelsArr = []
   
-  transposedArray[0].forEach((item)=>{
+  transposedArray[ unit==='k/l' ? 1 : 0 ].forEach((item)=>{
     labelsArr.push((new Date(item).toLocaleDateString().split(" ")).slice(0,3).join(' '))
   })
 
@@ -42,8 +63,8 @@ export default function BarGraph({dataSet, unit }) {
     datasets: [
       {
         label: unit,
-        data: transposedArray[1],
-        backgroundColor: 'rgba(53, 162, 235, 0.5)',
+        data: transposedArray[unit==='k/l' ? 0 : 1],
+        backgroundColor: color,
       },
     ],
   };

@@ -142,7 +142,8 @@ export default function Display() {
                             <div className="min-h-screen grid text-center gap-2 p-2 bg-black">
                                 {
                                     dataItems.map((item)=>(
-                                         <DisplayItem title={item.name} type={item.type} dataSet={item.data} unit={item.units} chart={item.chart}></DisplayItem>
+                                       
+                                         <DisplayItem title={item.name} type={item.type} dataSet={item.data} unit={item.units} chart={item.chart} color={item.color} isSmall={true} notes={item.notes}></DisplayItem>
                                     ))
                                 }
                             </div>
