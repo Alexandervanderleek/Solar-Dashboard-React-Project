@@ -48,7 +48,7 @@ export default function DisplayItem({title, type, dataSet, unit, chart, color, i
         <div className='flex text-center items-center justify-center'>
          
             <div className='text-xl font-bold'>
-              Consumed {Math.round(sum/9.4)} x 
+              Consumed {Math.round(sum/0.00033)} x 
             </div>
           
            <FaBottleWater size={50} className="text-blue-400"></FaBottleWater> 

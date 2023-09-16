@@ -8,6 +8,8 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useEffect } from 'react';
 import {useNavigate} from "react-router-dom"
+import NumberPicker from "react-widgets/NumberPicker";
+
 
 
 //Admin Dashboard page for for editing display options
@@ -22,8 +24,10 @@ export default function AdminDashBoard() {
     const [name,setName] = useState('');
     const [password, setPassword] = useState('');
     const [dataItems, setDataItems] = useState();
-    const [gridSettings, setSettings] = useState();
-    const [value, setValue] = useState();
+    const [item, setItem] = useState();
+    const [gridSettings, setGridSettings] = useState()
+    const [col, setCol] = useState(1)
+    const [row, setRow] = useState(1)
 
     const navigate = useNavigate();
 
@@ -33,7 +37,7 @@ export default function AdminDashBoard() {
         }
     }, [])
 
-     const logout = () => {
+    const logout = () => {
              console.log("logout attempt")
             logoutUser()
             toast("Succefully Logged out")
@@ -52,7 +56,9 @@ export default function AdminDashBoard() {
             }).then(response=>response.json()).then((res)=>{
                 console.log(res.results)
                 setDataItems(res.results)
-                setSettings(res.settings)
+                setGridSettings(res.settings)
+                setCol(res.settings[1])
+                setRow(res.settings[2])
            
                 setIsLoading(false)
             }).catch((e)=>{
@@ -63,11 +69,44 @@ export default function AdminDashBoard() {
         }
     }
 
+    const updateGrid = () => {
+        if(col==gridSettings[1] && row==gridSettings[2]){
+            toast("Grid up to date")
+        }else{
+            fetch('http://127.0.0.1:5000/updateGrid',{
+                method: 'POST',
+                mode: 'cors',
+                headers: {
+                    'Access-Control-Allow-Origin':'*',
+                    "Content-Type": "application/json",
+                    'Authorization': localStorage.tokendschool
+                    },
+                body: JSON.stringify({
+                    col: 2,
+                    row: 2
+                })
+            }).then(response=>response.json()).then((res)=>{
+                console.log(res)
+                setIsLoading(false)
+                if(res.error){
+                    setError(res.error)
+                }
+                if(res.success){
+                    toast("updated grid")
+                }
+            }).catch((err)=>{
+                console.log(err)
+                setIsLoading(false)
+                setError('Error Login')
+            })
+        }
+    }
+
     const addNewItem = () => {
-        if(!value){
+        if(!item){
             toast("Please select a item to add")
         }
-        console.log(value)
+        console.log(item)
     }
 
     useEffect(()=>{
@@ -108,17 +147,47 @@ export default function AdminDashBoard() {
                 </div>
                 <div className="flex-none">
                     <ul className="menu menu-horizontal px-1">
-                    <button onClick={()=>{logout()}} className="btn btn-error">Logout</button>
+                    <button onClick={()=>{logout()}} className="btn btn-lg btn-error">Logout</button>
                     </ul>
                 </div>
             </div>
+            <div className='flex flex-col justify-center items-center mt-8'>
+                <div className='flex items-center'>
+                    <div className='border-4 border-blue-400 p-4 rounded-lg'>
+                        <div className='text-2xl'>
+                            Grid Cols:
+                        </div>
+                        <NumberPicker
+                            className='text-3xl p-2'
+                            onKeyDown={(e)=>{e.preventDefault()}}
+                            value={col}
+                            onChange={value=>setCol(value)}
+                        ></NumberPicker>
+                    
+                        <div className='text-2xl'>
+                            Grid Rows:
+                        </div>
+                        <NumberPicker
+                            className='text-3xl p-2'
+                            onKeyDown={(e)=>{e.preventDefault()}}
+                            value={row}
+                            onChange={value=>setRow(value)}
+                        ></NumberPicker>
+                    
+                    </div>
 
+                    <button className="btn ml-6 btn-lg btn-info" onClick={()=>{updateGrid()}}>Update Grid</button>
+
+
+                </div>
+                
+            </div>
             
 
             <div className='flex flex-col justify-center items-center mt-8'>
                 <div className='flex flex-row w-full justify-center p-12'>
 
-                    <select onChange={event => setValue(event.target.value)} className="select select-lg select-success w-full max-w-xs">
+                    <select onChange={event => setItem(event.target.value)} className="select select-lg select-success w-full max-w-xs">
                         <option disabled selected>Pick a display item</option>
                         <option value={'EC'}>Electric Consumption</option>
                         <option value={'EP'}>Electric Production</option>
@@ -126,7 +195,7 @@ export default function AdminDashBoard() {
                         <option value={'ECVSEP'}>Electric Consumption vs Production</option>
                     </select>
 
-                    <button class="btn btn-lg btn-success ml-8" onClick={()=>{addNewItem()}}>Add Display Item</button>
+                    <button className="btn btn-lg btn-success ml-8" onClick={()=>{addNewItem()}}>Add Display Item</button>
 
                 </div>
 

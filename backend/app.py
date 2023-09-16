@@ -83,6 +83,25 @@ def dbItems():
         print(exc)
         return 'error'
     
+@app.route('/updateGrid', methods=["POST"])
+@token_required
+def updateGrid():
+    try:
+        col = request.json.get('col',3)
+        row = request.json.get('row',2)
+        with sqlite3.connect("database.db") as db:
+            cursor = db.cursor()
+            cursor.execute(f"UPDATE SETTINGS SET col={col},row={row} WHERE type='GRID'")
+            
+        return {
+            'success' : True,
+            }
+    except Exception as exc:
+        print("wrong")
+        print(exc)
+        return 'error'
+    
+    
 
 #login route - used to attempt login when accessing the admin page
 @app.route('/loginAPI', methods=["POST"])
