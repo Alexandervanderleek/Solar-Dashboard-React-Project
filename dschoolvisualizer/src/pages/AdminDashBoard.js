@@ -5,6 +5,8 @@ import { useState } from 'react';
 import globalContext from '../context/global/globalContext';
 import LoadingSpinner from '../components/UI/LoadingSpinner';
 import { ToastContainer, toast } from 'react-toastify';
+import { FcComboChart, FcDataConfiguration, FcHome } from "react-icons/fc";
+
 import 'react-toastify/dist/ReactToastify.css';
 import { useEffect } from 'react';
 import {useNavigate} from "react-router-dom"
@@ -44,8 +46,8 @@ export default function AdminDashBoard() {
        
     }
 
-    const requestData = () =>{
-        if(!dataItems ){
+    const requestData = (wantNow) =>{
+        if(!dataItems || wantNow ){
              setIsLoading(true)
              fetch('http://127.0.0.1:5000/dbAPI',{
                  mode: 'cors',
@@ -73,6 +75,7 @@ export default function AdminDashBoard() {
         if(col==gridSettings[1] && row==gridSettings[2]){
             toast("Grid up to date")
         }else{
+            setIsLoading(true)
             fetch('http://127.0.0.1:5000/updateGrid',{
                 method: 'POST',
                 mode: 'cors',
@@ -92,12 +95,13 @@ export default function AdminDashBoard() {
                     setError(res.error)
                 }
                 if(res.success){
+                    setGridSettings(["grid",col, row])
                     toast("updated grid")
                 }
             }).catch((err)=>{
                 console.log(err)
                 setIsLoading(false)
-                setError('Error Login')
+                setError('Error updating grid')
             })
         }
     }
@@ -105,8 +109,35 @@ export default function AdminDashBoard() {
     const addNewItem = () => {
         if(!item){
             toast("Please select a item to add")
+        }else{
+            setIsLoading(true)
+            fetch('http://127.0.0.1:5000/addDefault',{
+                method: 'POST',
+                mode: 'cors',
+                headers: {
+                    'Access-Control-Allow-Origin':'*',
+                    "Content-Type": "application/json",
+                    'Authorization': localStorage.tokendschool
+                    },
+                body: JSON.stringify({
+                    item: item
+                })
+            }).then(response=>response.json()).then((res)=>{
+                console.log(res)
+                setIsLoading(false)
+                if(res.error){
+                    setError(res.error)
+                }
+                if(res.success){
+                    requestData(true)
+                    toast("Added new Item")
+                }
+            }).catch((err)=>{
+                console.log(err)
+                setIsLoading(false)
+                setError('Error adding Item')
+            })
         }
-        console.log(item)
     }
 
     useEffect(()=>{
@@ -143,8 +174,24 @@ export default function AdminDashBoard() {
             <div className='min-h-screen'>
             <div className="navbar bg-base-300">
                 <div className="flex-1">
-                    <a className="btn btn-ghost normal-case text-2xl">ADMINDASHBOARD</a>
+                    <a href='/admindashboard' className="btn btn-ghost normal-case text-2xl">
+                        <FcDataConfiguration size={30}></FcDataConfiguration>
+                        ADMINDASHBOARD
+                    </a>
+                    <div className='border-l-2 border-gray-500'>
+                    <a href='/' className="btn btn-ghost normal-case text-2xl">
+                        <FcHome size={30}></FcHome>
+                        HOME
+                    </a>
+                    </div>
+                    <div className='border-l-2 border-gray-500'>
+                    <a href='/display' className="btn btn-ghost normal-case text-2xl">
+                        <FcComboChart size={30}></FcComboChart>
+                        DISPLAY
+                    </a>
+                    </div>
                 </div>
+               
                 <div className="flex-none">
                     <ul className="menu menu-horizontal px-1">
                     <button onClick={()=>{logout()}} className="btn btn-lg btn-error">Logout</button>
@@ -162,12 +209,16 @@ export default function AdminDashBoard() {
                             onKeyDown={(e)=>{e.preventDefault()}}
                             value={col}
                             onChange={value=>setCol(value)}
+                            min={1}
+                            max={4}
                         ></NumberPicker>
                     
                         <div className='text-2xl'>
                             Grid Rows:
                         </div>
                         <NumberPicker
+                            min={1}
+                            max={4}
                             className='text-3xl p-2'
                             onKeyDown={(e)=>{e.preventDefault()}}
                             value={row}

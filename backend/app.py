@@ -100,8 +100,74 @@ def updateGrid():
         print("wrong")
         print(exc)
         return 'error'
+
+
+@app.route('/addDefault', methods=["POST"])
+@token_required
+def addDefault():
+    try:
+        item = request.json.get('item',None)
+        with sqlite3.connect("database.db") as db:
+            cursor = db.cursor()
+            match item:
+                case "EC":
+                    cursor.execute(f"INSERT INTO COMPONENTS (type,data,interval,period,graph,adNotes,enabled,title) VALUES ('electric','EC', 'day','7','line','house','t','Electric Consumption - 7 Days')")
+                case "EP":
+                    cursor.execute(f"INSERT INTO COMPONENTS (type,data,interval,period,graph,adNotes,enabled,title) VALUES ('electric','EP', 'day','7','line','house','t','Electric Production - 7 Days')")
+                case "WC":
+                    cursor.execute(f"INSERT INTO COMPONENTS (type,data,interval,period,graph,adNotes,enabled,title) VALUES ('water','WC', 'day','7','line','bottle','t','Water Consumption - 7 Days')")
+                case "ECVSEP":
+                    cursor.execute(f"INSERT INTO COMPONENTS (type,data,interval,period,graph,adNotes,enabled,title) VALUES ('electric','ECVSEP', 'day','7','linemulti','','t','Consumed vs Produced - 7 Days')")
+                case _:
+                   return {
+                    'success' : True,
+                     } 
+
+        return {
+            'success' : True,
+            }
+    except Exception as exc:
+        print("wrong")
+        print(exc)
+        return 'error'
+
+@app.route('/deleteItem', methods=["POST"])
+@token_required
+def deleteItem():
+    try:
+        itemID = request.json.get('itemID',None)
+        with sqlite3.connect("database.db") as db:
+            cursor = db.cursor()
+            cursor.execute(f"DELETE FROM COMPONENTS WHERE id={itemID}")
+
+        return {
+            'success' : True,
+            }
+    except Exception as exc:
+        print("wrong")
+        print(exc)
+        return 'error'
     
-    
+@app.route('/updateItem', methods=["POST"])
+@token_required
+def updateItem():
+    try:
+        item = request.json.get('item',None)
+        
+        with sqlite3.connect("database.db") as db:
+             cursor = db.cursor()
+             #,period={item['period']},graph={item['graph']},adNotes={item['adNotes']},enabled={item['enabled']},title={item['title']}
+             cursor.execute(f"UPDATE COMPONENTS SET interval='{item['interval']}',period='{item['period']}',graph='{item['graph']}',adNotes='{item['adNotes']}',enabled='{item['enabled']}',title='{item['title']}' WHERE id='{item['id']}'")
+            
+
+        return {
+            'success' : True,
+            }
+    except Exception as exc:
+        print("wrong")
+        print(exc)
+        return 'error'
+
 
 #login route - used to attempt login when accessing the admin page
 @app.route('/loginAPI', methods=["POST"])
