@@ -3,9 +3,19 @@ from decouple import config
 import numpy as np
 
     
+# Description: This is the data collection 'class' for the backend routes,
+# request information is parsed to this class, which will then request from
+# the the terraform api and return the formated the data
+# Methods:
+# [x] createURL
+# [x] fetchElectricData
+# [x] fetchWaterData
+# [x] dualElectricFetch
+# [x] displayItems
 
 
-#function to create the request url based on componet parsed in
+#Method: match datatype and return the respective terraforma api route
+#Input (Datatype ['EC']) -> Output [formated create url]
 def createURL(item):
     match item[2]:
        case "EC":
@@ -44,7 +54,8 @@ def createURL(item):
                     baseURL = 'https://dashboard.terrafirma-software.com/WaterApi/getWaterUsageData?interval=ts_1hour&from_id=3&data_id='
                     return baseURL
 
-
+#Method: fetch electric production/consumption based on input data ranges
+#Input (types/ranges) -> output (Formated electric data)
 def fetchElectricData(x,gatheredData, returnData, dataPoint, units, color, title):
     placeholder = title + x[3]
     if placeholder not in  gatheredData:
@@ -77,32 +88,29 @@ def fetchElectricData(x,gatheredData, returnData, dataPoint, units, color, title
             }
         )
 
-
+#Method: fetch water consumption based on input data ranges
+#Input (types/ranges) -> output (Formated water data)
 def fetchWaterData(x,gatheredData, returnData, units, color):
     if x[2]+x[3] not in  gatheredData:  
             url = createURL(x)
             headers = {'Cookie': 'JSESSIONID=859B363EE9ED61EBED21CB1D7FFAE2E9; SERVERID=c2|ZQBMv|ZQAhS'}
-            DataItems = ['14016','14017','14010','14012','14009','14011','14013','14015','14014']#,'14010',14012,14009,14011,14013,14015,14014,14018
+            DataItems = ['14016','14017','14010','14012','14009','14011','14013','14015','14014']
             cleanResponses = []
             for z in DataItems:
                 response = requests.get(url=url+z, headers=headers) 
                 cleanResponse = response.json()['data_json'][0]['water_kl']
                 cleanResponses.append(cleanResponse)
                 
-            
             FinalResponse = []
             for i in range(len(cleanResponses[0])):
                 total = 0
                 for arr in cleanResponses:
                         total += arr[i][1]
                 FinalResponse.append([total,cleanResponses[0][i][0]])
-                
-
 
             gatheredData[x[2]+x[3]] = FinalResponse
         
-            returnData.append(
-                {
+            returnData.append({
                     'id' : x[0],
                     'name': x[8],
                     'chart': x[5],
@@ -111,11 +119,9 @@ def fetchWaterData(x,gatheredData, returnData, units, color):
                     'units': units,
                     'data': gatheredData[x[2]+x[3]][-x[4]:],
                     'color': color
-                }
-            )
+                })
     else:
-            returnData.append(
-            {
+            returnData.append({
                 'id' : x[0],
                 'name': x[8],
                 'chart': x[5],
@@ -124,10 +130,10 @@ def fetchWaterData(x,gatheredData, returnData, units, color):
                 'units': units,
                 'data': gatheredData[x[2]+x[3]][-x[4]:],
                 'color': color
-            }
-            )
+            })
 
-
+#Method for fetching 2 types of electric data and creating a combined single response
+#Input (types/ranges) -> output (Formated electric data combined)
 def dualElectricFetch(x, gatheredData, returnData):
     arr1 = []
     arr2 = []
@@ -149,20 +155,13 @@ def dualElectricFetch(x, gatheredData, returnData):
                 'color': color
             }
         ) 
-    
 
-
-
-
-#function to return all data for the parsed in display item
-#based on item, create a url for the request of data
-#create a clean object [appended to return array]
-
+#Method for calling correct data fetching methods based display items we want to show
+#Input (display items) -> output (all data formated for display) 
 def displayItems(arrayDisplayItems):
     
     gatheredData = {}
     returnData = []
-    
 
     for x in arrayDisplayItems:
         match x[2]:
@@ -185,8 +184,6 @@ def displayItems(arrayDisplayItems):
             
             case 'ECVSEP':
                 dualElectricFetch(x,gatheredData,returnData)
-              
-  
 
     return returnData
 

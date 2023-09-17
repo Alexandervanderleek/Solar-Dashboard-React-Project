@@ -8,15 +8,17 @@ import globalContext from '../context/global/globalContext';
 const useAuth = () => {
 
     //state and gloabl context var's
-
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const {setIsLoading, setError} = useContext(globalContext)
 
-    //login function, using fetch api, and name and password passed to function 
+    //login method
+    //Input (credentials)
+    //output (login token)
     const LoginIn = async(name,password) => {
         setIsLoading(true)
+        //no token login
         if(!localStorage.tokendschool){
-            fetch('http://127.0.0.1:5000/loginAPI',{
+            fetch('http://127.0.0.1:5000/loginAPI', {
                 method: 'POST',
                 mode: 'cors',
                 headers: {
@@ -37,11 +39,11 @@ const useAuth = () => {
                     setIsLoggedIn(true);
                 }
             }).catch((err)=>{
-                console.log(err)
                 setIsLoading(false)
                 setError('Error Login')
             })
         }else{
+            //token login
             fetch('http://127.0.0.1:5000/loginAPI',{
                 method: 'POST',
                 mode: 'cors',
@@ -62,7 +64,6 @@ const useAuth = () => {
                 }
                 
             }).catch((err)=>{
-                console.log(err)
                 localStorage.removeItem('tokendschool')
                 setIsLoading(false)
                 setError('Error Login')
@@ -71,7 +72,8 @@ const useAuth = () => {
 
     }
 
-
+    //method: destroys current login token,
+    //sets login status to false
     const logoutUser = () => {
         localStorage.removeItem('tokendschool')
         setIsLoggedIn(false)
@@ -79,7 +81,6 @@ const useAuth = () => {
 
 
     //items to be returned for global access
-
     return [isLoggedIn, LoginIn, logoutUser];
 }
 

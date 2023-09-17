@@ -3,7 +3,9 @@ import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 ChartJS.register( CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend );
 
-//Bar Graph display component, takes in props with unit types and data to display
+//Bar Graph display class
+//Input variables [dataSet, unit, color]
+//Output display graph 
 
 export default function BarGraph({dataSet, unit, color }) {
 
@@ -12,8 +14,6 @@ export default function BarGraph({dataSet, unit, color }) {
   const transpose = (matrix) => matrix[0].map((_, colIndex) => matrix.map(row => row[colIndex]));
 
   //graph options
-
-  console.log(color)
 
   const options = {
     responsive: true,

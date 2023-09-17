@@ -5,19 +5,20 @@ from functools import wraps
 from decouple import config
 import bcrypt
 import jwt
-import json
 import sqlite3
 
 
-# Routes for backend
-# COMPLETED
-# [x] display
-# [x] LoginBase
-# To Do
-# [] Register/change pass
-# [x] Login Tokens and db interaction
-# [] Admin Routes
-# [] display customization routes
+# Description: This is the main 'class' for the backend routes,
+# requests are sent to this backend class, which will then match
+# the request to the appropriate method. 
+# Routes:
+# [x] displayAPI
+# [x] dbAPI
+# [x] updateGrid
+# [x] addDefault
+# [x] deleteItem
+# [x] updateItem
+# [x] loginAPI
 
 
 app = Flask(__name__)
@@ -25,7 +26,8 @@ CORS(app)
 
 
 
-#Function to protect routes that require a token
+# Method to protect routes that require an authorization token
+# Input (Authorization token) -> Output validated token (based on secret code) result
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
@@ -43,9 +45,11 @@ def token_required(f):
     return decorated
 
 
-#display route - used to return current active components for large screen display
+# Display API route, returning all enabled components for display
+# Not protected route [no token required]
+# Method fetches all display components that are enabled [GET METHOD]
 @app.route('/displayAPI')
-def index():
+def displayItems():
     try:
         with sqlite3.connect("database.db") as db:
             cursor = db.cursor()
@@ -59,11 +63,12 @@ def index():
             'results' : result,
             'settings': resultSettings[0]
             }
-    except Exception as exc:
-        print(exc)
+    except Exception:
         return 'error'
 
-
+# Database component route, returning all components stored in the database
+# Protected route [token required]
+# Method fetches all components that are in the database [enabled or not] [GET METHOD]
 @app.route('/dbAPI')
 @token_required
 def dbItems():
@@ -79,10 +84,12 @@ def dbItems():
             'results' : result,
             'settings': resultSettings[0]
             }
-    except Exception as exc:
-        print(exc)
+    except Exception:
         return 'error'
-    
+
+# Update grid route, updating grid settings stored in the database
+# Protected route [token required]
+# Method takes input [new settings] and updates existing grid settings [POST METHOD]    
 @app.route('/updateGrid', methods=["POST"])
 @token_required
 def updateGrid():
@@ -93,15 +100,13 @@ def updateGrid():
             cursor = db.cursor()
             cursor.execute(f"UPDATE SETTINGS SET col={col},row={row} WHERE type='GRID'")
             
-        return {
-            'success' : True,
-            }
-    except Exception as exc:
-        print("wrong")
-        print(exc)
+        return { 'success' : True}
+    except Exception:
         return 'error'
 
-
+# Add default component, updating component database with a new item
+# Protected route [token required]
+# Method takes input [new item] and updates existing components database [POST METHOD]    
 @app.route('/addDefault', methods=["POST"])
 @token_required
 def addDefault():
@@ -119,18 +124,15 @@ def addDefault():
                 case "ECVSEP":
                     cursor.execute(f"INSERT INTO COMPONENTS (type,data,interval,period,graph,adNotes,enabled,title) VALUES ('electric','ECVSEP', 'day','7','linemulti','','t','Consumed vs Produced - 7 Days')")
                 case _:
-                   return {
-                    'success' : True,
-                     } 
+                   return { 'success' : True } 
 
-        return {
-            'success' : True,
-            }
-    except Exception as exc:
-        print("wrong")
-        print(exc)
+        return { 'success' : True }
+    except Exception:
         return 'error'
 
+# Delete display item, updating component database with newly deleted item
+# Protected route [token required]
+# Method takes input [delted item id] and updates existing components database [POST METHOD]    
 @app.route('/deleteItem', methods=["POST"])
 @token_required
 def deleteItem():
@@ -140,36 +142,30 @@ def deleteItem():
             cursor = db.cursor()
             cursor.execute(f"DELETE FROM COMPONENTS WHERE id={itemID}")
 
-        return {
-            'success' : True,
-            }
-    except Exception as exc:
-        print("wrong")
-        print(exc)
+        return {'success' : True}
+    except Exception:
         return 'error'
-    
+
+# Update display item, updating component database with newly updated item
+# Protected route [token required]
+# Method takes input [new item id] and updates existing components database [POST METHOD]        
 @app.route('/updateItem', methods=["POST"])
 @token_required
 def updateItem():
     try:
         item = request.json.get('item',None)
-        
         with sqlite3.connect("database.db") as db:
              cursor = db.cursor()
-             #,period={item['period']},graph={item['graph']},adNotes={item['adNotes']},enabled={item['enabled']},title={item['title']}
              cursor.execute(f"UPDATE COMPONENTS SET interval='{item['interval']}',period='{item['period']}',graph='{item['graph']}',adNotes='{item['adNotes']}',enabled='{item['enabled']}',title='{item['title']}' WHERE id='{item['id']}'")
             
-
-        return {
-            'success' : True,
-            }
-    except Exception as exc:
-        print("wrong")
-        print(exc)
+        return {'success' : True}
+    except Exception:
         return 'error'
 
-
-#login route - used to attempt login when accessing the admin page
+# login display route, verify credentials and get a login token
+# Protected route [token required]
+# Method takes input [credentials] and returns login status and token [POST METHOD] 
+# If input includes login token [verify it], else verify credentials and create new token     
 @app.route('/loginAPI', methods=["POST"])
 def loginMethod():
     if('Authorization' in request.headers):
@@ -198,9 +194,7 @@ def loginMethod():
         except:
             return "error", 400
     
-
-   
-
   
+#run main
 if __name__ == '__main__':
     app.run(debug=True)

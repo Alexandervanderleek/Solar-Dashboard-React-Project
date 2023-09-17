@@ -3,8 +3,9 @@ import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement
 import { Line } from 'react-chartjs-2';
 ChartJS.register( CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler );
 
-
-//Line graph component taking in props, dataset and unit types
+//Line Graph display class
+//Input variables [dataSet, unit, color]
+//Output line graph 
 
 export default function LineGraph({dataSet, unit, color}) {
 

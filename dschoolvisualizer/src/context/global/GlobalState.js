@@ -1,7 +1,7 @@
 import React, { useState} from "react";
 import GlobalContext from "./globalContext";
 
-//global provider component, providing access to global vars to all children components
+//global provider class, providing access to global vars to all children components
 
 const GlobalState = ({children}) => {
 

@@ -4,9 +4,12 @@ import { Line } from 'react-chartjs-2';
 ChartJS.register( CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler );
 
 
-//Line graph component taking in props, dataset and unit types
+//MultiLine Graph display class
+//Input variables [dataSet]
+//Output Multiline graph 
 
-export default function MultiLineGraph({dataSet, unit}) {
+
+export default function MultiLineGraph({dataSet}) {
 
   //transpose function, convert 2d array to two individual arrays
 

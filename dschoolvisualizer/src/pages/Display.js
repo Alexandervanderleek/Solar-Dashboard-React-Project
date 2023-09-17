@@ -10,8 +10,9 @@ import { useContext } from 'react';
 import globalContext from '../context/global/globalContext';
 
 
-//Display Page Component
-//To be use for the display of data around D-school
+//Display Page class
+//Gets display item information from backend API
+//Holds children display items for display based on fetched items
 
 export default function Display() {
 
@@ -29,7 +30,6 @@ export default function Display() {
         setWindowWidth(window.innerWidth)
     }
 
-
    //Function to request the display data from the backend
    const requestData = (newData) =>{
         if(!dataItems || newData ){
@@ -42,20 +42,16 @@ export default function Display() {
             }).then(response=>response.json()).then((res)=>{
                 setDataItems(res.results)
                 setSettings(res.settings)
-           
                 setIsLoading(false)
             }).catch((e)=>{
                 setIsLoading(false)
-                console.log(e)
                 setError("error fetching")
             })
         }
     }
 
-
     //hook for repetitive request of display data for updating purposes
     useEffect(()=>{
-        console.log("use Effect")
         requestData(false)
         const reFetch = setInterval(()=>{
             requestData(true)
@@ -63,14 +59,12 @@ export default function Display() {
         return () => clearInterval(reFetch)
     },[])
 
-
-    
-    
+ 
     //hook called on screen change
     useEffect(() => {
         window.addEventListener('resize', setWindowDimensions);
-            return () => {
-        window.removeEventListener('resize', setWindowDimensions)
+        return () => {
+            window.removeEventListener('resize', setWindowDimensions)
         }
     }, [])
 
@@ -94,7 +88,7 @@ export default function Display() {
         )
     }
 
-    // if in error state, load a error page [need to be completed]
+    // if in error state, load a error page 
     if(error){
         return(
             <div className='min-h-screen flex flex-col justify-center items-center text-center align-middle'>
@@ -107,7 +101,6 @@ export default function Display() {
             </div>
         )
     }
-
 
     //if a request for display items was sucessful 
     //load the display 

@@ -6,7 +6,6 @@ import globalContext from '../context/global/globalContext';
 import LoadingSpinner from '../components/UI/LoadingSpinner';
 import { ToastContainer, toast } from 'react-toastify';
 import { FcComboChart, FcDataConfiguration, FcHome } from "react-icons/fc";
-
 import 'react-toastify/dist/ReactToastify.css';
 import { useEffect } from 'react';
 import {useNavigate} from "react-router-dom"
@@ -14,13 +13,13 @@ import NumberPicker from "react-widgets/NumberPicker";
 
 
 
-//Admin Dashboard page for for editing display options
-//Requires a login via a master login
+//Admin Dashboard class for editing display options
+//Certain methods require login to access
+//Can edit display items via the admindashboard class
 
 export default function AdminDashBoard() {
 
     //state variables and global context 
-
     const {isLoggedIn, LoginIn, logoutUser} = useContext(authContext);
     const {isLoading,error, setError, setIsLoading} = useContext(globalContext)
     const [name,setName] = useState('');
@@ -30,22 +29,24 @@ export default function AdminDashBoard() {
     const [gridSettings, setGridSettings] = useState()
     const [col, setCol] = useState(1)
     const [row, setRow] = useState(1)
-
     const navigate = useNavigate();
 
+    //Hook to run loginMethod if a token is detected
     useEffect(()=>{
         if(localStorage.tokendschool && !isLoggedIn){
             LoginIn()
         }
     }, [])
 
+    //Logout method, call logout method from authcontext
     const logout = () => {
-             console.log("logout attempt")
-            logoutUser()
-            toast("Succefully Logged out")
-       
+        logoutUser()
+        toast("Succefully Logged out")       
     }
 
+    //Method: request all items in display item database
+    //Ouput => data item from database
+    //Requires the login token is present
     const requestData = (wantNow) =>{
         if(!dataItems || wantNow ){
              setIsLoading(true)
@@ -56,21 +57,22 @@ export default function AdminDashBoard() {
                      'Authorization': localStorage.tokendschool
                 }
             }).then(response=>response.json()).then((res)=>{
-                console.log(res.results)
                 setDataItems(res.results)
                 setGridSettings(res.settings)
                 setCol(res.settings[1])
                 setRow(res.settings[2])
-           
                 setIsLoading(false)
             }).catch((e)=>{
                 setIsLoading(false)
-                console.log(e)
                 setError("error fetching")
             })
         }
     }
 
+    //Method: updateGrid settings for display 
+    //takes input grid settings and sends to backend
+    //ouput is updated grid 
+    //Token is required
     const updateGrid = () => {
         if(col==gridSettings[1] && row==gridSettings[2]){
             toast("Grid up to date")
@@ -89,7 +91,6 @@ export default function AdminDashBoard() {
                     row: 2
                 })
             }).then(response=>response.json()).then((res)=>{
-                console.log(res)
                 setIsLoading(false)
                 if(res.error){
                     setError(res.error)
@@ -99,13 +100,16 @@ export default function AdminDashBoard() {
                     toast("updated grid")
                 }
             }).catch((err)=>{
-                console.log(err)
                 setIsLoading(false)
                 setError('Error updating grid')
             })
         }
     }
 
+    //Method: add a new item to database
+    //takes input item to be added and sends to backend
+    //ouput is updated display items 
+    //Token is required
     const addNewItem = () => {
         if(!item){
             toast("Please select a item to add")
@@ -123,7 +127,6 @@ export default function AdminDashBoard() {
                     item: item
                 })
             }).then(response=>response.json()).then((res)=>{
-                console.log(res)
                 setIsLoading(false)
                 if(res.error){
                     setError(res.error)
@@ -133,23 +136,21 @@ export default function AdminDashBoard() {
                     toast("Added new Item")
                 }
             }).catch((err)=>{
-                console.log(err)
                 setIsLoading(false)
                 setError('Error adding Item')
             })
         }
     }
 
+    //Hook to re request data on a login
     useEffect(()=>{
         if(isLoggedIn){
-            console.log("I want the data items")
             requestData()
         }
     },[isLoggedIn])
 
     
     //hook for error detection, to trigger a error toast effect
-
     useEffect(()=>{
        if(error!==''){
         toast(error)
@@ -158,15 +159,13 @@ export default function AdminDashBoard() {
     },[error])
 
     //if in a loading state, display loading spinner
-
     if(isLoading){
         return(
         <LoadingSpinner></LoadingSpinner>
         )
     }
 
-    //if is logged in display the admin dashboard [to be developed]
-
+    //if is loggedin display the admin dashboard 
     if(isLoggedIn && dataItems){
         return(
             <>
@@ -299,10 +298,10 @@ export default function AdminDashBoard() {
         )
     }
 
+
     //if not logged in && not loading 
     //display a login prompt 
-    //had toastcontainer, for error displays on failure of login
-
+    //have toastcontainer, for error displays on failure of login
     return (
         <>
             <ToastContainer></ToastContainer>
