@@ -5,6 +5,8 @@ import { FaBottleWater } from "react-icons/fa6";
 import BarGraph from '../UIgraphComponents/BarGraph'
 import LineGraph from '../UIgraphComponents/LineGraph'
 import MultiLineGraph from '../UIgraphComponents/MultiLineGraph';
+import { RiEmotionHappyLine, RiEmotionUnhappyLine } from "react-icons/ri";
+
 
 //Display Item 'class' to show data and additional information
 //Takes in a number of props to define how the display item is visualized
@@ -134,7 +136,39 @@ export default function DisplayItem({title, type, dataSet, unit, chart, color, i
                 <FcGlobe size={50} className="text-blue-400"></FcGlobe>             
         </div>
         )
-        
+      
+      case "compare":
+        const difference = dataSet[0][1] - dataSet[1][1] 
+        const percentage = Math.round((Math.abs(difference)/dataSet[0][1]) * 100)
+        console.log(dataSet)
+        return(
+          <div className='flex text-center items-center justify-center'>
+
+               {difference>=0 ? (
+                <>
+                  <div className='text-xl font-bold'>
+                     We are down {percentage} % 
+                  </div>
+                  <RiEmotionHappyLine size={50} className='text-green-400'> </RiEmotionHappyLine>
+                  <div className='text-xl font-bold'>
+                    = {Math.round(difference)} kw/h
+                  </div>
+                </>
+               ):(
+                <>
+                <div className='text-xl font-bold'>
+                   We are down {percentage} %   
+                </div>
+                <RiEmotionUnhappyLine size={50} className="text-red-400"></RiEmotionUnhappyLine> 
+                <div className='text-xl font-bold'>
+                    = {Math.round(difference)} kw/h  
+                  </div>
+                </>
+               )}
+           
+                
+        </div>
+        )
 
 
 

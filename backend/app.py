@@ -143,6 +143,9 @@ def addDefault():
                     cursor.execute(f"INSERT INTO COMPONENTS (type,data,interval,period,graph,adNotes,enabled,title) VALUES ('water','WC', 'day','7','line','bottle','t','Water Consumption - 7 Days')")
                 case "ECVSEP":
                     cursor.execute(f"INSERT INTO COMPONENTS (type,data,interval,period,graph,adNotes,enabled,title) VALUES ('electric','ECVSEP', 'day','7','linemulti','','t','Consumed vs Produced - 7 Days')")
+                case "compare":
+                    cursor.execute(f"INSERT INTO COMPONENTS (type,data,interval,period,graph,adNotes,enabled,title) VALUES ('electric','EC', 'month','2','bar','compare','t','This vs Last Month consumed')")
+                
                 case _:
                    return { 'success' : True } 
 

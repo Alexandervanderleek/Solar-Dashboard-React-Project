@@ -174,12 +174,15 @@ export default function SpecificItem({}) {
                       <select onChange={(e)=>{
                         item.interval = e.target.value
                         setItem({...item})}} value={item.interval} className="select select-lg select-success w-full max-w-xs"> 
-                        <option value={'day'}>Daily</option>
+                        {item.adNotes != 'compare' && (
+                          <option value={'day'}>Daily</option>
+                        )}
                         <option value={'month'}>Monthly</option>
                         <option value={'hour'}>Hourly</option>
                       </select>
                     </div>
                     
+                    {item.adNotes !== 'compare' && (<>
                     {/* PERIOD INPUT */}
                     <div className='flex flex-col m-3'>
                       <div className='text-2xl font-bold'>
@@ -234,7 +237,7 @@ export default function SpecificItem({}) {
                             <option value={'net'}>Net consumed vs produced</option>
                           </>)}
 
-                        {(item.data === 'EP' || item.data === 'EC') && (
+                        {(item.data === 'EP' || item.data === 'EC' ) && (
                           <>
                             <option value={'house'}>
                               Houses produced/consumed
@@ -259,6 +262,7 @@ export default function SpecificItem({}) {
                           </>)}
                       </select>
                     </div>  
+                    </>)}
                     
                     {/* ENABLED BUTTON */}
                    <div className='flex m-3'>
