@@ -49,7 +49,7 @@ def token_required(f):
 # Not protected route [no token required]
 # Method fetches all display components that are enabled [GET METHOD]
 @app.route('/displayAPI')
-def displayItems():
+def displayMain():
     try:
         with sqlite3.connect("database.db") as db:
             cursor = db.cursor()
@@ -63,7 +63,8 @@ def displayItems():
             'results' : result,
             'settings': resultSettings[0]
             }
-    except Exception:
+    except Exception as exc:
+        print(exc)
         return 'error'
 
 # Database component route, returning all components stored in the database

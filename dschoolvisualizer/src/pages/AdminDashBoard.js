@@ -97,7 +97,7 @@ export default function AdminDashBoard() {
                 }
                 if(res.success){
                     setGridSettings(["grid",col, row])
-                    toast("updated grid")
+                    toast("Updated Grid")
                 }
             }).catch((err)=>{
                 setIsLoading(false)
@@ -112,7 +112,7 @@ export default function AdminDashBoard() {
     //Token is required
     const addNewItem = () => {
         if(!item){
-            toast("Please select a item to add")
+            toast("Please select item to add")
         }else{
             setIsLoading(true)
             fetch('http://127.0.0.1:5000/addDefault',{
