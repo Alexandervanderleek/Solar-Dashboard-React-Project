@@ -4,6 +4,8 @@ import { ToastContainer, toast } from 'react-toastify'
 import LoadingSpinner from '../components/UI/LoadingSpinner'
 import globalContext from '../context/global/globalContext'
 
+//All stats 'class'
+//Methods to fetch certain data types from backend and convert those datatypes to downloadable files
 
 
 export default function AllStats() {
@@ -50,9 +52,8 @@ export default function AllStats() {
     return csv;
   }
 
-
-
-
+  //Method download data from backend
+  //input data type and interval -> output downloadble .csv file
   const downloadData = () => {
     setIsLoading(true)
     fetch('http://127.0.0.1:5000/getSpecificData',{
@@ -84,61 +85,58 @@ export default function AllStats() {
           <LoadingSpinner></LoadingSpinner>
         ):(
           <>
+          {/* NAVBAR */}
           <div className="navbar bg-base-300">
-                  <div className="flex-1">
+            <div className="flex-1">
+              <a href='/admindashboard' className="btn btn-ghost normal-case text-2xl">
+                <FcDataConfiguration size={30}></FcDataConfiguration>
+                ADMINDASHBOARD
+              </a>
+
+              <div className='border-l-2 border-gray-500'>
+                <a href='/' className="btn btn-ghost normal-case text-2xl">
+                  <FcHome size={30}></FcHome>
+                  HOME
+                </a>
+              </div>
   
-                    <a href='/admindashboard' className="btn btn-ghost normal-case text-2xl">
-                      <FcDataConfiguration size={30}></FcDataConfiguration>
-                      ADMINDASHBOARD
-                    </a>
+              <div className='border-l-2 border-gray-500'>
+                <a href='/display' className="btn btn-ghost normal-case text-2xl">
+                  <FcComboChart size={30}></FcComboChart>
+                  DISPLAY
+                </a>
+              </div>
   
-                    <div className='border-l-2 border-gray-500'>
-                      <a href='/' className="btn btn-ghost normal-case text-2xl">
-                        <FcHome size={30}></FcHome>
-                        HOME
-                      </a>
-                    </div>
-  
-                    <div className='border-l-2 border-gray-500'>
-                      <a href='/display' className="btn btn-ghost normal-case text-2xl">
-                        <FcComboChart size={30}></FcComboChart>
-                        DISPLAY
-                      </a>
-                    </div>
-  
-                  </div>
-  
-                  
-                </div>
-  
-  
-          {/* INTERVAL INPUT */}
+            </div>
+          </div>
+
           <div className='flex justify-center'>
-  
             <div>
-            <div className='flex flex-col m-3'>
-              <div className='text-2xl font-bold mb-2'>
-                Interval:
+              {/* INTERVAL INPUT */}
+              <div className='flex flex-col m-3'>
+                <div className='text-2xl font-bold mb-2'>
+                  Interval:
+                </div>
+              
+                <select onChange={(e)=>{ setInteval(e.target.value)}} value={interval} className="select select-lg select-success w-full max-w-xs"> 
+                  <option value={'day'}>Daily</option>
+                  <option value={'month'}>Monthly</option>
+                  <option value={'hour'}>Hourly</option>
+                </select>
               </div>
               
-              <select onChange={(e)=>{ setInteval(e.target.value)}} value={interval} className="select select-lg select-success w-full max-w-xs"> 
-                <option value={'day'}>Daily</option>
-                <option value={'month'}>Monthly</option>
-                <option value={'hour'}>Hourly</option>
-              </select>
-            </div>
-  
-            <div className='flex flex-col m-3'>
-              <div className='text-2xl font-bold mb-2'>
-                DataType:
-              </div>
+              {/* DATATYPE INPUT */}
+              <div className='flex flex-col m-3'>
+                <div className='text-2xl font-bold mb-2'>
+                  DataType:
+                </div>
               
-              <select onChange={(e)=>{ setData(e.target.value)}} value={data} className="select select-lg select-success w-full max-w-xs"> 
-                <option value={'EC'}>Electric consumption</option>
-                <option value={'EP'}>Electric production</option>
-                <option value={'WC'}>Water consumption</option>
-              </select>
-            </div>
+                <select onChange={(e)=>{ setData(e.target.value)}} value={data} className="select select-lg select-success w-full max-w-xs"> 
+                  <option value={'EC'}>Electric consumption</option>
+                  <option value={'EP'}>Electric production</option>
+                  <option value={'WC'}>Water consumption</option>
+                </select>
+              </div>
   
   
             <div className='flex justify-center mt-4'>
@@ -149,13 +147,8 @@ export default function AllStats() {
                 Download Data
               </button>
             </div>
-            </div>
-  
           </div>
-         
-          </>
-        )}
-      
+        </div>
+        </>)}  
     </div>
-  )
-}
+  )}

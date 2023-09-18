@@ -19,6 +19,7 @@ import sqlite3
 # [x] deleteItem
 # [x] updateItem
 # [x] loginAPI
+# [x] getSpecificData
 
 
 app = Flask(__name__)
@@ -105,7 +106,9 @@ def updateGrid():
     except Exception:
         return 'error'
     
-
+#get specifc data route, gets information from terraform api based on input
+#unprotected route [no token]
+# Method takes input [data type] and returns formated data
 @app.route('/getSpecificData', methods=["POST"])
 def getDownloadableData():
     try:

@@ -33,7 +33,7 @@ export default function DisplayItem({title, type, dataSet, unit, chart, color, i
   }
 
    //Method to calculate average difference between datasets
-   const calculateAverageDifference = (datasetIn,datasetIn2) => {
+  const calculateAverageDifference = (datasetIn,datasetIn2) => {
     let differences = 0;
     
     // Iterate through the dataset starting from the second element
@@ -45,17 +45,17 @@ export default function DisplayItem({title, type, dataSet, unit, chart, color, i
     return differences/datasetIn.length;
   }
 
+  //Method to transpose [,] to [[] []] 
   const transpose = (matrix) => matrix[0].map((_, colIndex) => matrix.map(row => row[colIndex]));
 
 
-
-
   //Method creates note visualization based on input note
+  //Matches note type and returns respective visualization
   // E.g [house] => number of average homes energy produced
   const defineNote = (note) =>{
     let sum
     let average
-    switch(note) {
+    switch(note) {      
       case "house":
         sum = dataSet.reduce((acc, arr) => acc += arr[unit==='k/l' ? 0 : 1], 0)
         return (
@@ -128,13 +128,11 @@ export default function DisplayItem({title, type, dataSet, unit, chart, color, i
 
         return(
           <div className='flex text-center items-center justify-center'>
-
-               <div className='text-xl font-bold'>
-                 We are covering {result} % of consmption  
-               </div>
-           
-                <FcGlobe size={50} className="text-blue-400"></FcGlobe>             
-        </div>
+            <div className='text-xl font-bold'>
+              We are covering {result} % of consmption  
+            </div>   
+            <FcGlobe size={50} className="text-blue-400"></FcGlobe>             
+          </div>
         )
       
       case "compare":
@@ -143,7 +141,6 @@ export default function DisplayItem({title, type, dataSet, unit, chart, color, i
         console.log(dataSet)
         return(
           <div className='flex text-center items-center justify-center'>
-
                {difference>=0 ? (
                 <>
                   <div className='text-xl font-bold'>
@@ -165,19 +162,14 @@ export default function DisplayItem({title, type, dataSet, unit, chart, color, i
                   </div>
                 </>
                )}
-           
-                
-        </div>
-        )
-
-
+         </div>)
 
       default:
         return(<div></div>)
     }
   }
   
-  //Returned visualization
+  //Returned item visualization
   return (
       <div className={ isSmall ? "h-96 card card-compact  bg-base-100 shadow-xl" : "card card-compact  bg-base-100 shadow-xl"}>
 

@@ -92,36 +92,25 @@ def fetchElectricData(x,gatheredData, returnData, dataPoint, units, color, title
 #Input (types/ranges) -> output (Formated water data)
 def fetchWaterData(x,gatheredData, returnData, units, color):
     if x[2]+x[3] not in  gatheredData:  
-            url = createURL(x[2],x[3])
-            headers = {'Cookie': 'JSESSIONID=859B363EE9ED61EBED21CB1D7FFAE2E9; SERVERID=c2|ZQBMv|ZQAhS'}
-            DataItems = ['14016','14017','14010','14012','14009','14011','14013','14015','14014']
-            cleanResponses = []
-            for z in DataItems:
-                response = requests.get(url=url+z, headers=headers) 
-                cleanResponse = response.json()['data_json'][0]['water_kl']
-                cleanResponses.append(cleanResponse)
-                
-            FinalResponse = []
-            for i in range(len(cleanResponses[0])):
-                total = 0
-                for arr in cleanResponses:
-                        total += arr[i][1]
-                FinalResponse.append([total,cleanResponses[0][i][0]])
+        url = createURL(x[2],x[3])
+        headers = {'Cookie': 'JSESSIONID=859B363EE9ED61EBED21CB1D7FFAE2E9; SERVERID=c2|ZQBMv|ZQAhS'}
+        DataItems = ['14016','14017','14010','14012','14009','14011','14013','14015','14014']
+        cleanResponses = []
+        for z in DataItems:
+            response = requests.get(url=url+z, headers=headers) 
+            cleanResponse = response.json()['data_json'][0]['water_kl']
+            cleanResponses.append(cleanResponse)
+            
+        FinalResponse = []
+        for i in range(len(cleanResponses[0])):
+            total = 0
+            for arr in cleanResponses:
+                    total += arr[i][1]
+            FinalResponse.append([total,cleanResponses[0][i][0]])
 
-            gatheredData[x[2]+x[3]] = FinalResponse
-        
-            returnData.append({
-                    'id' : x[0],
-                    'name': x[8],
-                    'chart': x[5],
-                    'type': x[1],
-                    'notes': x[6],
-                    'units': units,
-                    'data': gatheredData[x[2]+x[3]][-x[4]:],
-                    'color': color
-                })
-    else:
-            returnData.append({
+        gatheredData[x[2]+x[3]] = FinalResponse
+    
+        returnData.append({
                 'id' : x[0],
                 'name': x[8],
                 'chart': x[5],
@@ -131,6 +120,17 @@ def fetchWaterData(x,gatheredData, returnData, units, color):
                 'data': gatheredData[x[2]+x[3]][-x[4]:],
                 'color': color
             })
+    else:
+        returnData.append({
+            'id' : x[0],
+            'name': x[8],
+            'chart': x[5],
+            'type': x[1],
+            'notes': x[6],
+            'units': units,
+            'data': gatheredData[x[2]+x[3]][-x[4]:],
+            'color': color
+        })
 
 #Method for fetching 2 types of electric data and creating a combined single response
 #Input (types/ranges) -> output (Formated electric data combined)
