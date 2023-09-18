@@ -104,6 +104,25 @@ def updateGrid():
         return { 'success' : True}
     except Exception:
         return 'error'
+    
+
+@app.route('/getSpecificData', methods=["POST"])
+def getDownloadableData():
+    try:
+        type = request.json.get('type','')
+        interval = request.json.get('interval','')
+        match type:
+            case 'EC':
+                url = createURL(type, interval)
+                response = requests.get(url=url, auth=(config('TERRA_API_USER') ,config('TERRA_API_PASS')))
+                return { 'data' : response.json()[1]}
+            case 'EP':
+                url = createURL(type, interval)
+                response = requests.get(url=url, auth=(config('TERRA_API_USER') ,config('TERRA_API_PASS')))
+                return { 'data' : response.json()[0]}
+    except Exception:
+        return 'error'
+
 
 # Add default component, updating component database with a new item
 # Protected route [token required]

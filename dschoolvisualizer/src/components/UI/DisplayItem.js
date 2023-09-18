@@ -1,6 +1,6 @@
 import React from 'react'
 import {WiLightning, WiRaindrop} from 'react-icons/wi'
-import { FcHome } from "react-icons/fc";
+import { FcGlobe, FcHome, FcNegativeDynamic, FcPositiveDynamic } from "react-icons/fc";
 import { FaBottleWater } from "react-icons/fa6";
 import BarGraph from '../UIgraphComponents/BarGraph'
 import LineGraph from '../UIgraphComponents/LineGraph'
@@ -12,11 +12,47 @@ import MultiLineGraph from '../UIgraphComponents/MultiLineGraph';
 //Output -> data visualized
 
 export default function DisplayItem({title, type, dataSet, unit, chart, color, isSmall,notes}) {
+  
+  //Method to calculate average trend percentage from dataset
+  const calculateTrendPercentages = (datasetIn) => {
+    let trendPercentages = 0;
+    
+    // Iterate through the dataset starting from the second element
+    for (let i = 1; i < datasetIn.length; i++) {
+      const currentValue = datasetIn[i][1];
+      const previousValue = datasetIn[i - 1][1];
+  
+      // Calculate the trend percentage and push it to the result array
+      const trendPercentage = ((currentValue - previousValue) / previousValue) * 100;
+      trendPercentages += trendPercentage;
+    }
+  
+    return trendPercentages/datasetIn.length;
+  }
+
+   //Method to calculate average difference between datasets
+   const calculateAverageDifference = (datasetIn,datasetIn2) => {
+    let differences = 0;
+    
+    // Iterate through the dataset starting from the second element
+    for (let i = 1; i < datasetIn.length; i++) {
+      const difference = ((datasetIn2[i]) / (datasetIn[i] )) * 100
+      differences += difference;
+    }
+  
+    return differences/datasetIn.length;
+  }
+
+  const transpose = (matrix) => matrix[0].map((_, colIndex) => matrix.map(row => row[colIndex]));
+
+
+
 
   //Method creates note visualization based on input note
   // E.g [house] => number of average homes energy produced
   const defineNote = (note) =>{
     let sum
+    let average
     switch(note) {
       case "house":
         sum = dataSet.reduce((acc, arr) => acc += arr[unit==='k/l' ? 0 : 1], 0)
@@ -25,7 +61,7 @@ export default function DisplayItem({title, type, dataSet, unit, chart, color, i
             
             {color==='rgb(72,195,83,0.6)' && (
               <div className='text-xl font-bold'>
-                produced {Math.round(sum/9.4)} x Average
+                Produced {Math.round(sum/9.4)} x Average
               </div>
             )}
 
@@ -59,6 +95,49 @@ export default function DisplayItem({title, type, dataSet, unit, chart, color, i
 
           </div>)
 
+      case "trend":
+        average = Math.round(calculateTrendPercentages(dataSet))
+        return(
+          <div className='flex text-center items-center justify-center'>
+            {average>0? (
+              <>
+               <div className='text-xl font-bold'>
+                 Trending up {average} %
+               </div>
+           
+                <FcPositiveDynamic size={50} className="text-blue-400"></FcPositiveDynamic> 
+                </>
+            ):(
+              <>
+               <div className='text-xl font-bold'>
+                 Trending down {average} %
+               </div>
+           
+                <FcNegativeDynamic size={50} className="text-blue-400"></FcNegativeDynamic> 
+                </>
+            )}
+        </div>
+        )
+      
+      case "net":
+        const transposedArray = transpose(dataSet[0].data)[1]
+        const tansposedArray2 = transpose(dataSet[1].data)[1]
+        const result = Math.round(calculateAverageDifference(transposedArray,tansposedArray2))
+
+        return(
+          <div className='flex text-center items-center justify-center'>
+
+               <div className='text-xl font-bold'>
+                 We are covering {result} % of consmption  
+               </div>
+           
+                <FcGlobe size={50} className="text-blue-400"></FcGlobe>             
+        </div>
+        )
+        
+
+
+
       default:
         return(<div></div>)
     }
@@ -83,7 +162,7 @@ export default function DisplayItem({title, type, dataSet, unit, chart, color, i
           {/* Graph Item */}
           <div className='h-full w-full p-2'>
               {chart==='bar' && (
-                  <BarGraph dataSet={dataSet} unit={unit} color={color}></BarGraph>
+                  <BarGraph dataSet={dataSet} unit={unit} color={color} ></BarGraph>
               )}
               {chart==='line' && (
                 <LineGraph dataSet={dataSet} unit={unit} color={color}></LineGraph>

@@ -4,6 +4,7 @@ import LandingPage from '../../pages/LandingPage';
 import Display from '../../pages/Display';
 import AdminDashBoard from '../../pages/AdminDashBoard';
 import SpecificItem from '../../pages/SpecificItem';
+import AllStats from '../../pages/AllStats';
 
 //Routing Component
 //All available routes for the d-school visualization webapp
@@ -25,7 +26,7 @@ export default function TheRoutes() {
       <Route path="/admindashboard/:id" exact element={<SpecificItem></SpecificItem>}/>
 
       {/* All data available route */}
-      <Route path="/alldata"/>
+      <Route path="/alldata" element={<AllStats></AllStats>} />
     </Routes>
   )
 }

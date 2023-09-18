@@ -231,6 +231,7 @@ export default function SpecificItem({}) {
                         {item.data === 'ECVSEP' && (
                           <>
                             <option value={''}>None</option>
+                            <option value={'net'}>Net consumed vs produced</option>
                           </>)}
 
                         {(item.data === 'EP' || item.data === 'EC') && (
@@ -238,6 +239,11 @@ export default function SpecificItem({}) {
                             <option value={'house'}>
                               Houses produced/consumed
                             </option>
+                            <option value={'trend'}>
+                              Trend % for data
+                            </option>
+                            <option value={''}>None</option>
+
                           </>)}
 
                         {item.data === 'WC' && (
@@ -245,6 +251,11 @@ export default function SpecificItem({}) {
                             <option value={'bottle'}>
                               Bottles Consumed
                             </option>
+                            <option value={'trend'}>
+                              Trend % for data
+                            </option>
+                            <option value={''}>None</option>
+
                           </>)}
                       </select>
                     </div>  

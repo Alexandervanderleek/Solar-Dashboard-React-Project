@@ -16,11 +16,11 @@ import numpy as np
 
 #Method: match datatype and return the respective terraforma api route
 #Input (Datatype ['EC']) -> Output [formated create url]
-def createURL(item):
-    match item[2]:
+def createURL(item2,item3):
+    match item2:
        case "EC":
             baseURL = 'https://dashboard.terrafirma-software.com/Clientapi/'
-            match item[3]:
+            match item3:
                 case "day":
                     baseURL += 'getG1Data?interval=ts_1day&from_id=7&data_id=14472'
                     return baseURL
@@ -32,7 +32,7 @@ def createURL(item):
                     return baseURL
        case "EP":
             baseURL = 'https://dashboard.terrafirma-software.com/Clientapi/'
-            match item[3]:
+            match item3:
                 case "day":
                     baseURL += 'getG33Data?interval=ts_1day&from_id=7&data_id=14746'  
                     return baseURL
@@ -43,7 +43,7 @@ def createURL(item):
                     baseURL += 'getG133ata?interval=ts_1hour&from_id=4&data_id=14746'
                     return baseURL
        case "WC":
-            match item[3]:
+            match item3:
                 case "day":
                     baseURL = 'https://dashboard.terrafirma-software.com/WaterApi/getWaterUsageData?interval=ts_1day&from_id=5&data_id='
                     return baseURL
@@ -59,7 +59,7 @@ def createURL(item):
 def fetchElectricData(x,gatheredData, returnData, dataPoint, units, color, title):
     placeholder = title + x[3]
     if placeholder not in  gatheredData:
-        url = createURL(x)
+        url = createURL(title,x[3])
         response = requests.get(url=url, auth=(config('TERRA_API_USER') ,config('TERRA_API_PASS')))
         gatheredData[placeholder] = response.json()[dataPoint]
         returnData.append(
@@ -92,7 +92,7 @@ def fetchElectricData(x,gatheredData, returnData, dataPoint, units, color, title
 #Input (types/ranges) -> output (Formated water data)
 def fetchWaterData(x,gatheredData, returnData, units, color):
     if x[2]+x[3] not in  gatheredData:  
-            url = createURL(x)
+            url = createURL(x[2],x[3])
             headers = {'Cookie': 'JSESSIONID=859B363EE9ED61EBED21CB1D7FFAE2E9; SERVERID=c2|ZQBMv|ZQAhS'}
             DataItems = ['14016','14017','14010','14012','14009','14011','14013','14015','14014']
             cleanResponses = []
