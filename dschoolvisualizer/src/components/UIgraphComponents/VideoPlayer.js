@@ -1,6 +1,8 @@
 import React from 'react'
 import ReactPlayer from 'react-player'
 
+//Function that returns a video player object 
+//Based on dataset provided to function
 
 function VideoPlayer({dataSet}) {
   return (
