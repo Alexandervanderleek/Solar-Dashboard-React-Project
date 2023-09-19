@@ -1,11 +1,13 @@
 import React from 'react'
 import {WiLightning, WiRaindrop} from 'react-icons/wi'
-import { FcGlobe, FcHome, FcNegativeDynamic, FcPositiveDynamic } from "react-icons/fc";
+import { FcGlobe, FcHome, FcNegativeDynamic, FcPositiveDynamic,FcNews, FcStart } from "react-icons/fc";
 import { FaBottleWater } from "react-icons/fa6";
 import BarGraph from '../UIgraphComponents/BarGraph'
 import LineGraph from '../UIgraphComponents/LineGraph'
 import MultiLineGraph from '../UIgraphComponents/MultiLineGraph';
-import { RiEmotionHappyLine, RiEmotionUnhappyLine } from "react-icons/ri";
+import { RiArrowDownFill, RiArrowUpFill } from "react-icons/ri";
+import TextComponent from '../UIgraphComponents/TextComponent';
+import VideoPlayer from '../UIgraphComponents/VideoPlayer';
 
 
 //Display Item 'class' to show data and additional information
@@ -136,31 +138,55 @@ export default function DisplayItem({title, type, dataSet, unit, chart, color, i
         )
       
       case "compare":
-        const difference = dataSet[0][1] - dataSet[1][1] 
-        const percentage = Math.round((Math.abs(difference)/dataSet[0][1]) * 100)
-        console.log(dataSet)
+        
+        
+        const difference = dataSet[0][unit==='k/l' ? 0 : 1] - dataSet[1][unit==='k/l' ? 0 : 1] 
+        const  percentage = Math.round((Math.abs(difference)/dataSet[0][unit==='k/l' ? 0 : 1]) * 100)
+       
         return(
           <div className='flex text-center items-center justify-center'>
                {difference>=0 ? (
                 <>
                   <div className='text-xl font-bold'>
-                     We are down {percentage} % 
+                    Previous: {(dataSet[0][unit==='k/l' ? 0 : 1]).toFixed(2)} {unit} 
                   </div>
-                  <RiEmotionHappyLine size={50} className='text-green-400'> </RiEmotionHappyLine>
+                  
+                  <div className='text-2xl font-bold m-2'>
+                     VS  
+                  </div>
+
                   <div className='text-xl font-bold'>
-                    = {Math.round(difference)} kw/h
+                    Current: {(dataSet[1][unit==='k/l' ? 0 : 1]).toFixed(2)} {unit} 
                   </div>
+                  
+                  <RiArrowDownFill size={50} className="text-green-400"></RiArrowDownFill> 
+
+                  <div className='text-xl font-bold text-green-400'>
+                     {percentage} %
+                  </div>
+
                 </>
                ):(
                 <>
                 <div className='text-xl font-bold'>
-                   We are down {percentage} %   
+                  Previous: {(dataSet[0][unit==='k/l' ? 0 : 1]).toFixed(2)} {unit} 
                 </div>
-                <RiEmotionUnhappyLine size={50} className="text-red-400"></RiEmotionUnhappyLine> 
+                
+                <div className='text-2xl font-bold m-2'>
+                   VS  
+                </div>
+
                 <div className='text-xl font-bold'>
-                    = {Math.round(difference)} kw/h  
-                  </div>
-                </>
+                  Current: {(dataSet[1][unit==='k/l' ? 0 : 1]).toFixed(2)} {unit} 
+                </div>
+                
+                <RiArrowUpFill size={50} className="text-red-400"></RiArrowUpFill> 
+
+                <div className='text-xl font-bold text-red-400'>
+                   {percentage} %
+                </div>
+
+              </>
                )}
          </div>)
 
@@ -176,10 +202,15 @@ export default function DisplayItem({title, type, dataSet, unit, chart, color, i
           {/* title item & type */}
           <div className='flex justify-center align-middle text-center'>
             <h2 className="card-title text-lg md:text-4xl">{title}</h2>
-             {type==="electric" ? (
+             {type==="electric" && (
               <WiLightning size={60} className="text-yellow-300"></WiLightning>
-              ):(
+              )}
+              {type==="water" && (
               <WiRaindrop size={60} className="text-blue-300"></WiRaindrop> )}
+              {type==="information" && (
+              <FcNews size={60}></FcNews> )}
+              {type==="video" && (
+              <FcStart size={60}></FcStart> )}
           </div>
 
           {/* Additional Notes, to be developed */}
@@ -195,6 +226,13 @@ export default function DisplayItem({title, type, dataSet, unit, chart, color, i
               )}
               {chart ==='linemulti' && (
                 <MultiLineGraph dataSet={dataSet} unit={unit}></MultiLineGraph>
+              )}
+               {chart ==='text' && (
+                <TextComponent dataSet={dataSet}></TextComponent>
+              )}
+
+              {chart ==='video' && (
+                <VideoPlayer dataSet={dataSet}></VideoPlayer>
               )}
           </div>       
       </div>)

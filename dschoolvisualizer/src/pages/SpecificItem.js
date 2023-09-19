@@ -167,22 +167,41 @@ export default function SpecificItem({}) {
                     
                     {/* INTERVAL INPUT */}
                     <div className='flex flex-col m-3'>
-                      <div className='text-2xl font-bold'>
-                        Interval:
-                      </div>
+                      {(item.type != 'information' && item.type != 'video') ? (
+                        <>
+                          <div className='text-2xl font-bold'>
+                            Interval:
+                          </div>
+                    
+                          <select onChange={(e)=>{
+                            item.interval = e.target.value
+                            setItem({...item})}} value={item.interval} className="select select-lg select-success w-full max-w-xs"> 
+                            {(item.adNotes != 'compare' || item.type == 'water') && (
+                              <option value={'day'}>Daily</option>
+                            )}
+                            <option value={'month'}>Monthly</option>
+                            {item.type != 'water' && (
+                              <option value={'hour'}>Hourly</option>
+                            )}
+                            
+                          </select>
+                        </>
+                      ):(
+                        <>
+                            <div className='text-2xl font-bold'>
+                              Text:
+                            </div>
                       
-                      <select onChange={(e)=>{
+                            <textarea className="textarea text-xl textarea-success w-96" value={item.interval} onChange={(e)=>{
                         item.interval = e.target.value
-                        setItem({...item})}} value={item.interval} className="select select-lg select-success w-full max-w-xs"> 
-                        {item.adNotes != 'compare' && (
-                          <option value={'day'}>Daily</option>
-                        )}
-                        <option value={'month'}>Monthly</option>
-                        <option value={'hour'}>Hourly</option>
-                      </select>
+                        setItem({...item})}} placeholder="Bio"></textarea>
+                     
+                        </>
+                      )}
+                    
                     </div>
                     
-                    {item.adNotes !== 'compare' && (<>
+                    {(item.adNotes !== 'compare' && item.type !== 'information' && item.type !== 'video' ) &&(<>
                     {/* PERIOD INPUT */}
                     <div className='flex flex-col m-3'>
                       <div className='text-2xl font-bold'>

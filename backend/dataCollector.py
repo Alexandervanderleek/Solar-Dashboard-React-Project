@@ -100,16 +100,13 @@ def fetchWaterData(x,gatheredData, returnData, units, color):
             response = requests.get(url=url+z, headers=headers) 
             cleanResponse = response.json()['data_json'][0]['water_kl']
             cleanResponses.append(cleanResponse)
-            
         FinalResponse = []
         for i in range(len(cleanResponses[0])):
             total = 0
             for arr in cleanResponses:
                     total += arr[i][1]
             FinalResponse.append([total,cleanResponses[0][i][0]])
-
         gatheredData[x[2]+x[3]] = FinalResponse
-    
         returnData.append({
                 'id' : x[0],
                 'name': x[8],
@@ -156,6 +153,25 @@ def dualElectricFetch(x, gatheredData, returnData):
             }
         ) 
 
+#Method to returned base data for display
+def returnBaseData(returnData,x):
+    returnData.append(
+         {
+                'id' : x[0],
+                'name': x[8],
+                'chart': x[5],
+                'type': x[1],
+                'notes': x[6],
+                'units': 'none',
+                'data': x[3],
+                'color': 'none'
+            }
+        ) 
+    
+
+
+
+
 #Method for calling correct data fetching methods based display items we want to show
 #Input (display items) -> output (all data formated for display) 
 def displayItems(arrayDisplayItems):
@@ -184,6 +200,12 @@ def displayItems(arrayDisplayItems):
             
             case 'ECVSEP':
                 dualElectricFetch(x,gatheredData,returnData)
+            
+            case 'TEXT':
+                returnBaseData(returnData,x)
+
+            case 'VIDEO':
+                returnBaseData(returnData,x),
 
     return returnData
 

@@ -147,8 +147,9 @@ def addDefault():
                 case "ECVSEP":
                     cursor.execute(f"INSERT INTO COMPONENTS (type,data,interval,period,graph,adNotes,enabled,title) VALUES ('electric','ECVSEP', 'day','7','linemulti','','t','Consumed vs Produced - 7 Days')")
                 case "compare":
-                    cursor.execute(f"INSERT INTO COMPONENTS (type,data,interval,period,graph,adNotes,enabled,title) VALUES ('electric','EC', 'month','2','bar','compare','t','This vs Last Month consumed')")
-                
+                    cursor.execute(f"INSERT INTO COMPONENTS (type,data,interval,period,graph,adNotes,enabled,title) VALUES ('electric','EC', 'month','2','bar','compare','t','Current vs Last Month consumed')")
+                case "information":
+                    cursor.execute(f"INSERT INTO COMPONENTS (type,data,interval,period,graph,adNotes,enabled,title) VALUES ('information','TEXT', 'Welcome to the D-school!','none','text','none','t','Welcome to the D-school !')")
                 case _:
                    return { 'success' : True } 
 

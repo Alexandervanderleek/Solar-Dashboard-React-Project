@@ -244,6 +244,7 @@ export default function AdminDashBoard() {
                         <option value={'WC'}>Water Consumption</option>
                         <option value={'ECVSEP'}>Electric Consumption vs Production</option>
                         <option value={'compare'}>Compare this vs last</option>
+                        <option value={'information'}>Text Component</option>
                     </select>
 
                     <button className="btn btn-lg btn-success ml-8" onClick={()=>{addNewItem()}}>Add Display Item</button>
