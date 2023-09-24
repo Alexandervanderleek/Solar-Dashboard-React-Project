@@ -110,7 +110,7 @@ export default function SpecificItem({}) {
     const logout = () => {
       logoutUser()
       navigate('/admindashboard')
-  }
+    }
 
     if(location.state){
         return (
@@ -284,7 +284,7 @@ export default function SpecificItem({}) {
                     </>)}
                     
                     {/* ENABLED BUTTON */}
-                   <div className='flex m-3'>
+                    <div className='flex m-3'>
                       <div className="text-2xl font-bold mr-5">Enabled:</div>
                       <input type="checkbox" checked={item.enabled==='t'?true:false}  onChange={(e)=>{
                         item.enabled = e.target.checked ? 't' : 'f'
@@ -302,6 +302,7 @@ export default function SpecificItem({}) {
                         Delete
                       </button>
                     </div>
+
                   </div>
                 </div>
             </div>)}

@@ -203,7 +203,7 @@ export default function AdminDashBoard() {
                 </div>
                
                 <div className="flex-none">
-                    
+                    {/* Fake Data toggle selector */}
                     <span className="label-text text-lg font-bold mr-2">Fake Data</span> 
                     <input type="checkbox" checked={fakeData==='f'?true:false} onChange={(e)=>{
                         SetFakeData(e.target.checked ? 'f' : 't')
@@ -217,6 +217,7 @@ export default function AdminDashBoard() {
             </div>
             <div className='flex flex-col justify-center items-center mt-8'>
                 <div className='flex items-center'>
+                    {/* GRID EDITOR */}
                     <div className='border-4 border-blue-400 p-4 rounded-lg'>
                         <div className='text-2xl'>
                             Grid Cols:
@@ -251,7 +252,7 @@ export default function AdminDashBoard() {
                 
             </div>
             
-
+            {/* ADD DISPLAY ITEM BUTTON */}
             <div className='flex flex-col justify-center items-center mt-8'>
                 <div className='flex flex-row w-full justify-center p-12'>
 
@@ -271,7 +272,7 @@ export default function AdminDashBoard() {
 
                 </div>
 
-
+                {/* ITEM GRID  */}
                 <div className="border-indigo-500 border-4 rounded-2xl">
                     <table className=" table table-lg max-w-6xl m-5">
                     

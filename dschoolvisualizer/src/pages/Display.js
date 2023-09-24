@@ -33,11 +33,11 @@ export default function Display() {
    //Function to request the display data from the backend
    const requestData = (newData) =>{
         if(!dataItems || newData ){
-             setIsLoading(true)
-             fetch('http://127.0.0.1:5000/displayAPI',{
-                 mode: 'cors',
-                 headers: {
-                     'Access-Control-Allow-Origin':'*'
+            setIsLoading(true)
+            fetch('http://127.0.0.1:5000/displayAPI',{
+                mode: 'cors',
+                headers: {
+                    'Access-Control-Allow-Origin':'*'
                 }
             }).then(response=>response.json()).then((res)=>{
                 console.log(res)
@@ -80,7 +80,7 @@ export default function Display() {
         }
 
         return result;
-      }
+    }
 
     // if in a loading state, return the loading spinner
     if(isLoading){
@@ -108,7 +108,7 @@ export default function Display() {
     if(dataItems){
         return (
             <>
-                {/* Overaly component with fullscreen button, only shown for certain screens */}
+                {/* Overlay component with fullscreen button, only shown for certain screens */}
                 { (!handle.active && windowWidth >= 1200  ) && 
                     <div style={styles.overlayStyle}>
                         <button

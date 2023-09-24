@@ -167,8 +167,7 @@ def dualElectricFetch(x, gatheredData, returnData, realData):
 
 #Method to returned base data for display
 def returnBaseData(returnData,x):
-    returnData.append(
-         {
+    returnData.append({
                 'id' : x[0],
                 'name': x[8],
                 'chart': x[5],
@@ -177,12 +176,8 @@ def returnBaseData(returnData,x):
                 'units': 'none',
                 'data': x[3],
                 'color': 'none'
-            }
-        ) 
+            }) 
     
-
-
-
 
 #Method for calling correct data fetching methods based display items we want to show
 #Input (display items) -> output (all data formated for display) 
