@@ -54,8 +54,14 @@ def displayMain():
     try:
         with sqlite3.connect("database.db") as db:
             cursor = db.cursor()
+
             res = cursor.execute("SELECT * FROM COMPONENTS WHERE enabled='t'")
-            result = displayItems(res.fetchall())
+            resComponents = res.fetchall()
+
+            resEnabled = cursor.execute("SELECT * FROM SETTINGS WHERE type='REALDATA'")
+            resEnabledResult = resEnabled.fetchall()[0][1]
+
+            result = displayItems(resComponents, resEnabledResult)
 
             resSettings = cursor.execute("SELECT * FROM SETTINGS WHERE type='GRID'")
             resultSettings = resSettings.fetchall()
@@ -65,7 +71,6 @@ def displayMain():
             'settings': resultSettings[0]
             }
     except Exception as exc:
-        print(exc)
         return 'error'
 
 # Database component route, returning all components stored in the database
@@ -80,11 +85,11 @@ def dbItems():
             res = cursor.execute("SELECT * FROM COMPONENTS")
             result = res.fetchall()
 
-            resSettings = cursor.execute("SELECT * FROM SETTINGS WHERE type='GRID'")
+            resSettings = cursor.execute("SELECT * FROM SETTINGS")
             resultSettings = resSettings.fetchall()
         return {
             'results' : result,
-            'settings': resultSettings[0]
+            'settings': resultSettings
             }
     except Exception:
         return 'error'
@@ -98,12 +103,17 @@ def updateGrid():
     try:
         col = request.json.get('col',3)
         row = request.json.get('row',2)
+        fakeData  = request.json.get('fake',None)
+       
         with sqlite3.connect("database.db") as db:
             cursor = db.cursor()
-            cursor.execute(f"UPDATE SETTINGS SET col={col},row={row} WHERE type='GRID'")
+            if fakeData:
+                cursor.execute(f"UPDATE SETTINGS SET col='{fakeData}' WHERE type='REALDATA'")
+            else:
+                cursor.execute(f"UPDATE SETTINGS SET col={col},row={row} WHERE type='GRID'")
             
         return { 'success' : True}
-    except Exception:
+    except Exception as Ecx:
         return 'error'
     
 #get specifc data route, gets information from terraform api based on input
@@ -148,8 +158,13 @@ def addDefault():
                     cursor.execute(f"INSERT INTO COMPONENTS (type,data,interval,period,graph,adNotes,enabled,title) VALUES ('electric','ECVSEP', 'day','7','linemulti','','t','Consumed vs Produced - 7 Days')")
                 case "compare":
                     cursor.execute(f"INSERT INTO COMPONENTS (type,data,interval,period,graph,adNotes,enabled,title) VALUES ('electric','EC', 'month','2','bar','compare','t','Current vs Last Month consumed')")
+                case "comparewater":
+                    cursor.execute(f"INSERT INTO COMPONENTS (type,data,interval,period,graph,adNotes,enabled,title) VALUES ('water','WC', 'day','2','bar','compare','t','Current vs Last Day consumed')")
                 case "information":
                     cursor.execute(f"INSERT INTO COMPONENTS (type,data,interval,period,graph,adNotes,enabled,title) VALUES ('information','TEXT', 'Welcome to the D-school!','none','text','none','t','Welcome to the D-school !')")
+                case "video":
+                    cursor.execute(f"INSERT INTO COMPONENTS (type,data,interval,period,graph,adNotes,enabled,title) VALUES ('video','VIDEO', 'https://www.youtube.com/watch?v=jAa58N4Jlos','','video', 'video','t','Climate Change')")
+                
                 case _:
                    return { 'success' : True } 
 

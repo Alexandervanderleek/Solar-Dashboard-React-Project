@@ -40,6 +40,7 @@ export default function Display() {
                      'Access-Control-Allow-Origin':'*'
                 }
             }).then(response=>response.json()).then((res)=>{
+                console.log(res)
                 setDataItems(res.results)
                 setSettings(res.settings)
                 setIsLoading(false)

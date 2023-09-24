@@ -29,6 +29,7 @@ export default function AdminDashBoard() {
     const [gridSettings, setGridSettings] = useState()
     const [col, setCol] = useState(1)
     const [row, setRow] = useState(1)
+    const [fakeData,SetFakeData] = useState('')
     const navigate = useNavigate();
 
     //Hook to run loginMethod if a token is detected
@@ -58,9 +59,11 @@ export default function AdminDashBoard() {
                 }
             }).then(response=>response.json()).then((res)=>{
                 setDataItems(res.results)
-                setGridSettings(res.settings)
-                setCol(res.settings[1])
-                setRow(res.settings[2])
+                console.log(res.settings)
+                SetFakeData(res.settings[1][1])
+                setGridSettings(res.settings[0])
+                setCol(res.settings[0][1])
+                setRow(res.settings[0][2])
                 setIsLoading(false)
             }).catch((e)=>{
                 setIsLoading(false)
@@ -73,8 +76,8 @@ export default function AdminDashBoard() {
     //takes input grid settings and sends to backend
     //ouput is updated grid 
     //Token is required
-    const updateGrid = () => {
-        if(col==gridSettings[1] && row==gridSettings[2]){
+    const updateGrid = (fakedata, value) => {
+        if(col==gridSettings[1] && row==gridSettings[2] && !fakedata){
             toast("Grid up to date")
         }else{
             setIsLoading(true)
@@ -86,10 +89,13 @@ export default function AdminDashBoard() {
                     "Content-Type": "application/json",
                     'Authorization': localStorage.tokendschool
                     },
-                body: JSON.stringify({
-                    col: 2,
-                    row: 2
-                })
+                body: JSON.stringify(
+                    {
+                        col: col,
+                        row: row,
+                        fake: value
+                    }
+            )
             }).then(response=>response.json()).then((res)=>{
                 setIsLoading(false)
                 if(res.error){
@@ -97,7 +103,12 @@ export default function AdminDashBoard() {
                 }
                 if(res.success){
                     setGridSettings(["grid",col, row])
-                    toast("Updated Grid")
+                    if(fakedata){
+                        toast("Changed Data ")
+                    }else{
+                        toast("Updated Grid")
+                    }
+                       
                 }
             }).catch((err)=>{
                 setIsLoading(false)
@@ -192,6 +203,13 @@ export default function AdminDashBoard() {
                 </div>
                
                 <div className="flex-none">
+                    
+                    <span className="label-text text-lg font-bold mr-2">Fake Data</span> 
+                    <input type="checkbox" checked={fakeData==='f'?true:false} onChange={(e)=>{
+                        SetFakeData(e.target.checked ? 'f' : 't')
+                        updateGrid(true,e.target.checked ? 'f' : 't' )
+                        }} className="toggle toggle-accent toggle-lg mr-8" />                
+
                     <ul className="menu menu-horizontal px-1">
                     <button onClick={()=>{logout()}} className="btn btn-lg btn-error">Logout</button>
                     </ul>
@@ -226,7 +244,7 @@ export default function AdminDashBoard() {
                     
                     </div>
 
-                    <button className="btn ml-6 btn-lg btn-info" onClick={()=>{updateGrid()}}>Update Grid</button>
+                    <button className="btn ml-6 btn-lg btn-info" onClick={()=>{updateGrid(false)}}>Update Grid</button>
 
 
                 </div>
@@ -243,8 +261,10 @@ export default function AdminDashBoard() {
                         <option value={'EP'}>Electric Production</option>
                         <option value={'WC'}>Water Consumption</option>
                         <option value={'ECVSEP'}>Electric Consumption vs Production</option>
-                        <option value={'compare'}>Compare this vs last</option>
+                        <option value={'compare'}>Compare this vs last Electric</option>
+                        <option value={'comparewater'} >Compare this vs last Water</option>
                         <option value={'information'}>Text Component</option>
+                        <option value={'video'}>Video Component</option>
                     </select>
 
                     <button className="btn btn-lg btn-success ml-8" onClick={()=>{addNewItem()}}>Add Display Item</button>
